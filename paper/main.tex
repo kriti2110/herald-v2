@@ -460,7 +460,7 @@ C_i^{*}=\frac{d_i^{-}}{d_i^{+}+d_i^{-}}\in[0,1]
 is larger for alternatives closer to the ideal. Weights are a judgement; we therefore always show several weightings.
 
 \subsection{Earlier baseline models on identical patients}
-We scored \herald{} and the earlier baseline models on exactly the same 229{,}244 early-prediction rows (5{,}983 test patients) with one code path, using AUROC, AUPRC, patient AUROC, sensitivity at 90\% specificity and alerts per true positive (a cost criterion). \herald{} ranks first (C$^*$ \TopsisV{} vs.\ \TopsisL{} for the best earlier LightGBM) under all four weightings (Fig.~\ref{fig:topsis_models}, Fig.~\ref{fig:topsis_sens}, Table~\ref{tab:topsis_models}). The margin is small: AUPRC is nearly tied (0.0513 vs.\ 0.0510), and the earlier LightGBM is slightly ahead on patient AUROC and sensitivity. \herald{} was trained on 80\% of all patients in cross-validation, whereas the earlier models used 60\%, which slightly favors \herald{}.
+We scored \herald{} and the earlier baseline models on exactly the same 229{,}244 early-prediction rows (5{,}983 test patients) with one code path, using AUROC, AUPRC, patient AUROC, sensitivity at 90\% specificity and alerts per true positive (a cost criterion). \herald{} ranks first (C$^*$ \TopsisV{} vs.\ \TopsisL{} for the best earlier LightGBM) under all four weightings (Fig.~\ref{fig:topsis_models}, Fig.~\ref{fig:topsis_sens}, Table~\ref{tab:topsis_models}). The margin is small: AUPRC is nearly tied (0.0513 vs.\ 0.0510), and the earlier LightGBM is slightly ahead on patient AUROC and sensitivity. Training-set sizes are comparable rather than identical. The earlier models fit on 60\% of patients and used another 15\% for early stopping. In \herald{}, each of the four stage-1 models fits on about 53\% of all patients (about 7\% for early stopping) and the stage-2 model on about 68\% (about 12\%), all within the 80\% outer-training set; the four stage-1 models together cover that whole set. Training-set size therefore does not clearly favor either side.\label{sec:topsis_sizes}
 
 \begin{figure*}[!t]
 \centering
@@ -471,7 +471,7 @@ We scored \herald{} and the earlier baseline models on exactly the same 229{,}24
 
 \begin{table*}[!t]
 \centering\footnotesize\setlength{\tabcolsep}{3.4pt}
-\caption{TOPSIS on the \emph{identical} 229{,}244 early-prediction rows (5{,}983 test patients) of the earlier baseline models: criteria and closeness $C^*$ under four weightings. Equal weights are used because the original weights were not archived; AlertsPerTP is a cost criterion. \herald{} was trained on 80\% of patients per fold and the earlier models on 60\%, which slightly favors \herald{}.}
+\caption{TOPSIS on the \emph{identical} 229{,}244 early-prediction rows (5{,}983 test patients) of the earlier baseline models: criteria and closeness $C^*$ under four weightings. Equal weights are used because the original weights were not archived; AlertsPerTP is a cost criterion. Training-set sizes are comparable, not identical: the earlier models fit on 60\% of patients, each \herald{} stage-1 model on about 53\% and the stage-2 model on about 68\% (all within the 80\% outer-training set; Sec.~\ref{sec:topsis_sizes}).}
 \label{tab:topsis_models}
 \begin{adjustbox}{max width=\linewidth}
 \begin{tabular}{lccccccccc}
