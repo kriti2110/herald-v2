@@ -55,7 +55,7 @@ w("t_related", "\\begin{table*}[!t]\n\\centering\\scriptsize\\setlength{\\tabcol
 fc_rows = 1524294; fc_pos = 14079; det_pos = 27916
 rows = [["Hourly ICU records (rows)", "1{,}552{,}210"], ["ICU stays (hospital A / B)", "40{,}336 (20{,}336 / 20{,}000)"], ["Septic stays (ever SepsisLabel $=1$)", f"{int(FOLDS.ever_septic.sum()):,} (7.27\\%)".replace(",", "{,}")],
         ["Forecast rows / positives (6\\,h)", f"{fc_rows:,} / {fc_pos:,} (0.92\\%)".replace(",", "{,}")], ["Detection positives (hourly)", f"{det_pos:,} (1.80\\%)".replace(",", "{,}")],
-        ["Outer evaluation", "5 patient-level stratified folds (seed 42)"], ["Inner split (per outer fold)", "75 / 12.5 / 12.5\\% fit / val / calibration patients"],
+        ["Outer evaluation", "5 patient-level stratified folds (seed 42)"], ["Inner split (per outer fold)", "stage 1: 4 inner folds, 12\\% early-stopping holdout; stage 2: 85 / 15\\% fit / early stopping"], ["Calibration", "isotonic, fitted on the other four folds' out-of-fold scores"],
         ["Cross-hospital", "train A$\\to$test B and B$\\to$A"], ["Test-set handling", "natural prevalence; never resampled"], ["Uncertainty", "patient-clustered bootstrap (1000 reps)"]]
 w("t_protocol", "\\begin{table}[!t]\n\\centering\\footnotesize\n\\caption{Cohort and evaluation protocol.}\n\\label{tab:protocol}\n" + tabular("ll", rows, ["Item", "Value"]) + "\n\\end{table}\n")
 
