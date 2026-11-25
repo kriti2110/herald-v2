@@ -17,6 +17,7 @@ The PhysioNet/CinC 2019 challenge data (training sets A and B) are **not redistr
 | `scripts/03_gbm.py`, `04_tune.py`, `05_tcn.py`, `07_final.py` | models, validation-only tuning, final two-stage cross-validation and hospital transfer (`run_final.sh`) |
 | `scripts/09`-`15` | validation-only experiments, horizons, stay-level task, TOPSIS on identical patients, stay-level OOF export |
 | `scripts/16_subgroups_dca_burden.py` | subgroups (age, sex, hospital), decision curves, alert burden (reads saved predictions only) |
+| `scripts/17_label_timing_sensitivity.py` | label-timing sensitivity of the early-prediction result (evaluation only, reads saved predictions) |
 | `results/` | fold assignments (`patient_folds.csv`), final out-of-fold predictions, metrics and audit JSON files |
 | `paper/` | figure and table generators (`figs_*.py`, `tables.py`, `analysis.py`), `numbers.tex`, `main.tex`, supplementary code listings, graphical abstract |
 
@@ -28,7 +29,7 @@ python scripts/01c_build_features_v3.py && python scripts/02c_audit_prefix_v3.py
 # 2. final models (5-fold patient-level CV, train A -> test B and B -> A)
 bash scripts/run_final.sh forecast && bash scripts/run_final.sh detect
 # 3. analyses, tables and figures from the saved result files
-python scripts/16_subgroups_dca_burden.py
+python scripts/16_subgroups_dca_burden.py && python scripts/17_label_timing_sensitivity.py
 cd paper && python figs_a.py && python figs_b.py && python figs_c.py && python figs_d.py && python tables.py
 ```
 Outer folds use seed 42. `HERALD_ROOT` overrides the repository root; `scripts/13_topsis_same_patients.py` also needs the outputs of the

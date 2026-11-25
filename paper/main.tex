@@ -31,7 +31,7 @@
 \affiliation[inst1]{organization={\textcolor{red}{[Affiliation]}}}
 
 \begin{abstract}
-Reported performance of ICU sepsis models depends on how labels are defined and how tests are built: row-level splits, features that see future hours and balanced test sets can all inflate AUROC and especially AUPRC. We present \herald, a two-stage model for \emph{early prediction} (onset within 6\,h) and \emph{hourly detection} of sepsis, together with an audited evaluation protocol. A prefix-invariance audit shows that all 370 features are unchanged when future rows are appended (\NCut{} cuts, \NCmp{} comparisons), while a deliberately non-causal control is flagged in \NCtrl{} cases. On the 40{,}336 stays of PhysioNet/CinC 2019, with patient-level 5-fold cross-validation, natural prevalence and patient-clustered bootstrap intervals, \herald{} reaches AUROC \AurocFc{} (AUPRC \AuprcFc) for 6\,h early prediction and \AurocDt{} (\AuprcDt) for hourly detection. Training on one hospital and testing on the other lowers these to \AurocFcT{} and \AurocDtT{}. AUROC differs by less than 0.02 across age bands and sexes, and decision curves show net benefit over treating all or no rows at low risk thresholds. A separate \emph{retrospective} stay-level classifier reaches AUROC \AurocStay{} (AUPRC \AuprcStay) and \AurocStayT{} across hospitals, and is not explained by stay length. Measurement-timing features carry part of the signal. On identical test patients, a TOPSIS ranking places \herald{} first among earlier baseline models, although its margin over a tuned LightGBM is small. Published scores use incompatible protocols, so we tabulate but do not rank them. We also report what did not help: a temporal CNN, personal-baseline features, soft labels and class weighting. Our contribution is a reproducible, leakage-audited evaluation protocol with honest uncertainty, not a claim of state-of-the-art accuracy.
+Reported performance of ICU sepsis models depends on how labels are defined and tests are built: row-level splits, features that see future hours and balanced test sets inflate AUROC and especially AUPRC. We present \herald, a two-stage model for \emph{early prediction} (onset within 6\,h) and \emph{hourly detection} of sepsis, with an audited evaluation protocol. A prefix-invariance audit shows that all 370 features are unchanged when future rows are appended (\NCut{} cuts, \NCmp{} comparisons), while a deliberately non-causal control is flagged in \NCtrl{} cases. On the 40{,}336 stays of PhysioNet/CinC 2019, with patient-level 5-fold cross-validation, natural prevalence and patient-clustered bootstrap intervals, \herald{} reaches AUROC \AurocFc{} (AUPRC \AuprcFc) for early prediction and \AurocDt{} (\AuprcDt) for hourly detection; training on one hospital and testing on the other lowers these to \AurocFcT{} and \AurocDtT{}. AUROC differs by less than 0.02 across age bands and sexes, and decision curves show net benefit at low risk thresholds. A separate \emph{retrospective} stay-level classifier reaches AUROC \AurocStay{} (\AurocStayT{} across hospitals) and is not explained by stay length. Measurement-timing features carry part of the signal. On identical test patients, \herald{} ranks first among earlier baseline models by a small TOPSIS margin; published scores use incompatible protocols and are not ranked. Negative results (temporal CNN, personal-baseline features, soft labels, class weighting) are reported. Our contribution is a reproducible, leakage-audited evaluation protocol, not state-of-the-art accuracy.
 \end{abstract}
 
 \begin{highlights}
@@ -108,7 +108,7 @@ We use PhysioNet/CinC 2019 training sets A and B: \NStays{} ICU stays (\NHospA{}
 Let $y_{it}\in\{0,1\}$ be SepsisLabel of stay $i$ at hour $t$ and $\tau_i^{+}$ the first hour with $y_{it}=1$ ($\infty$ if none). In the challenge labeling $\tau_i^{+}$ precedes clinical onset by 6\,h, so it is an early-warning label time.
 \begin{itemize}
 \item \textbf{Early prediction ($h$ hours).} Rows are all hours before $\tau_i^{+}$ for septic stays and all hours for non-septic stays; the target is $\mathbf{1}\{\tau_i^{+}-t\le h\}$. We use $h=6$ as the primary task and $h\in\{12,24\}$ for sensitivity.
-\item \textbf{Hourly detection.} Every hour is a row and the target is $y_{it}$, so post-onset hours are included. This task matches common benchmark practice but is easier than forecasting.
+\item \textbf{Hourly detection.} Every hour is a row and the target is $y_{it}$, so post-onset hours are included. This task matches common benchmark practice but is easier than early prediction.
 \item \textbf{Stay-level detection.} One row per stay, target $\max_t y_{it}$, scored from aggregates over the entire stay. It is explicitly \emph{retrospective}.
 \end{itemize}
 The row-level positive rates differ by task and are quoted throughout: 0.92\% of rows for early prediction (6\,h) and 1.80\% for hourly detection, against 7.27\% of stays for stay-level detection (Table~\ref{tab:protocol}). They are the AUPRC baselines.
@@ -126,36 +126,9 @@ We allow forward-fill (last observation carried forward), trailing rolling windo
 
 \input{tables/t_features.tex}
 
-\subsection{Two-stage temporal stacking}
-\textbf{Stage 1} is a LightGBM classifier \cite{ke2017} on the 370 features. For each outer training set we run an inner 4-fold patient-level split: each inner model scores its held-out patients, giving out-of-fold logits $z_{it}$ for every training row, and the test logit is the mean of the four inner models. \textbf{Stage 2} is a smaller LightGBM on the causal \emph{history} of the stage-1 score, namely the running maximum, trailing means (3--24\,h) and maxima, 3\,h and 6\,h trends, counts of hours above the 90th and 99th training-score percentiles, ICULOS and the 25 most important stage-1 features:
-\begin{equation}
-g_{it} = \mathrm{GBM}_2\!\big(z_{it},\ \max_{s\le t}z_{is},\ \overline{z}_{i,t-w:t},\ z_{it}-z_{i,t-k},\ \dots\big).
-\end{equation}
-Because every term uses $s\le t$, Eq.~\eqref{eq:prefix} is preserved; a unit test confirms that stage-2 features do not change when later rows are appended. The same architecture serves both hourly tasks.
-
-\subsection{Stay-level classifier}
-For each stay we compute the maximum, minimum, mean and last value of each causal feature over the whole stay (1{,}208 features) and train a LightGBM classifier. The primary variant excludes stay length, ICULOS, admission time, unit and all measurement-timing features; a variant including them is reported only as an ablation.
-
-\subsection{Causal temporal CNN (benchmark)}
-As an alternative sequence model we train a causal multi-task temporal CNN: six residual dilated-convolution blocks (dilations 1--32, kernel 3, width 96) with left-only padding and per-timestep layer normalization, and two output heads (6\,h forecast, current label). Prefix validity of the trained network was checked directly (maximum logit change $<10^{-6}$ when future rows are appended).
-
-\input{tables/t_hyper.tex}
-
-
-\subsection{Splits and uncertainty}
-All reported scores are \emph{out-of-fold}, and folds are grouped by patient because correlated observations from one patient must not be split across folds \cite{roberts2017}: patients are split into five stratified, patient-disjoint folds, and each patient is scored by models that never saw them. Within each training set, 75/12.5/12.5\% of patients are used for fitting, early stopping (validation log-loss) and isotonic calibration. Hyper-parameters were chosen on validation patients only, and test folds were touched once. We report pooled AUROC and AUPRC with 95\% intervals from a patient-clustered bootstrap: whole stays are re-weighted, so hourly correlation does not shrink the intervals. AUROC is the probability that a random positive outranks a random negative \cite{hanley1982}, whereas AUPRC and ROC curves are related but not interchangeable under imbalance \cite{davis2006,saito2015}. Calibration is often neglected yet decisive for clinical use \cite{vancalster2019}, so we also report reliability and Brier skill. A \emph{balanced view} (432 septic and 432 non-septic patients, repeated 200 times) is computed from the same predictions only to allow comparison with balanced-test studies; headline metrics are never computed on resampled data.
-
-\subsection{Prefix-invariance audit}
+\subsection{Prefix-invariance audit and negative control}
 \label{sec:audit}
-For 200 stays (100 septic) we computed the features from rows $1,\dots,t$ alone at several cut hours (\NCut{} cuts, \NCmp{} feature comparisons) and compared them with row $t$ of the features from the whole stay (relative and absolute tolerance $10^{-4}$). All 370 features passed. As a negative control we added a centered 5-hour moving average of heart rate; it failed at \NCtrl{} cuts (83.6\%), showing that the audit detects leakage (Fig.~\ref{fig:audit}; the audit code is in Listing~\ref{lst:audit}). Earlier feature sets (306 and 410 features) passed the same test.
-
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\columnwidth]{fig03_audit.png}
-\caption{Prefix-invariance audit. Three causal feature sets show no violations; the deliberately non-causal control fails at 83.6\% of cuts.}
-\label{fig:audit}
-\end{figure}
-
+For 200 stays (100 septic) we computed the features from rows $1,\dots,t$ alone at several cut hours and compared them with row $t$ of the features from the whole stay (relative and absolute tolerance $10^{-4}$; procedure in Table~\ref{tab:alg}, code in Listing~\ref{lst:audit}). As a negative control we add a centered 5-hour moving average of heart rate, which the audit must flag. The audit passes only if no causal feature has a violation and the control is flagged.
 
 \begin{table}[!t]
 \centering\footnotesize
@@ -188,6 +161,25 @@ def audit(stays, cuts):
     return bad       # control (centered window) must appear here
 \end{lstlisting}
 
+\subsection{Two-stage temporal stacking}
+\textbf{Stage 1} is a LightGBM classifier \cite{ke2017} on the 370 features. For each outer training set we run an inner 4-fold patient-level split: each inner model scores its held-out patients, giving out-of-fold logits $z_{it}$ for every training row, and the test logit is the mean of the four inner models. \textbf{Stage 2} is a smaller LightGBM on the causal \emph{history} of the stage-1 score, namely the running maximum, trailing means (3--24\,h) and maxima, 3\,h and 6\,h trends, counts of hours above the 90th and 99th training-score percentiles, ICULOS and the 25 most important stage-1 features:
+\begin{equation}
+g_{it} = \mathrm{GBM}_2\!\big(z_{it},\ \max_{s\le t}z_{is},\ \overline{z}_{i,t-w:t},\ z_{it}-z_{i,t-k},\ \dots\big).
+\end{equation}
+Because every term uses $s\le t$, Eq.~\eqref{eq:prefix} is preserved; a unit test confirms that stage-2 features do not change when later rows are appended. The same architecture serves both hourly tasks.
+
+\subsection{Stay-level classifier}
+For each stay we compute the maximum, minimum, mean and last value of each causal feature over the whole stay (1{,}208 features) and train a LightGBM classifier. The primary variant excludes stay length, ICULOS, admission time, unit and all measurement-timing features; a variant including them is reported only as an ablation.
+
+\subsection{Causal temporal CNN (benchmark)}
+As an alternative sequence model we train a causal multi-task temporal CNN: six residual dilated-convolution blocks (dilations 1--32, kernel 3, width 96) with left-only padding and per-timestep layer normalization, and two output heads (6\,h early prediction, current label). Prefix validity of the trained network was checked directly (maximum logit change $<10^{-6}$ when future rows are appended).
+
+\input{tables/t_hyper.tex}
+
+
+\subsection{Splits and uncertainty}
+All reported scores are \emph{out-of-fold}, and folds are grouped by patient because correlated observations from one patient must not be split across folds \cite{roberts2017}: patients are split into five stratified, patient-disjoint folds, and each patient is scored by models that never saw them. Within each training set, 75/12.5/12.5\% of patients are used for fitting, early stopping (validation log-loss) and isotonic calibration. Hyper-parameters were chosen on validation patients only, and test folds were touched once. We report pooled AUROC and AUPRC with 95\% intervals from a patient-clustered bootstrap: whole stays are re-weighted, so hourly correlation does not shrink the intervals. AUROC is the probability that a random positive outranks a random negative \cite{hanley1982}, whereas AUPRC and ROC curves are related but not interchangeable under imbalance \cite{davis2006,saito2015}. Calibration is often neglected yet decisive for clinical use \cite{vancalster2019}, so we also report reliability and Brier skill. A \emph{balanced view} (432 septic and 432 non-septic patients, repeated 200 times) is computed from the same predictions only to allow comparison with balanced-test studies; headline metrics are never computed on resampled data.
+
 \subsection{Subgroups, decision curves and alert burden}
 We report the performance of the final two-stage score within age bands ($<$45, 45--64, 65--79 and $\geq$80 years), sex (as coded in the challenge data) and hospital, using the pooled out-of-fold predictions. AUROC intervals use the patient-clustered bootstrap (300 replicates); AUPRC is a point estimate, reported with its lift over the subgroup's own prevalence. Race and ethnicity are not available in the challenge data. For decision-curve analysis \cite{vickers2006}, risks are calibrated by isotonic regression fitted on the out-of-fold scores of the other four folds and applied to the held-out fold, and the net benefit at threshold probability $p_t$ is computed over all evaluated rows,
 \begin{equation}
@@ -200,6 +192,16 @@ Experiments ran on a 10-core Apple-silicon laptop with 16\,GB of memory using Py
 
 \section{Results}
 \label{sec:results}
+\subsection{Audit validity}
+All 370 features passed the prefix-invariance audit (\NCut{} cuts, \NCmp{} feature comparisons). The negative control failed at \NCtrl{} cuts (83.6\%), showing that the audit detects leakage (Fig.~\ref{fig:audit}). Earlier feature sets (306 and 410 features) passed the same test.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{fig03_audit.png}
+\caption{Prefix-invariance audit. Three causal feature sets show no violations; the deliberately non-causal control fails at 83.6\% of cuts.}
+\label{fig:audit}
+\end{figure}
+
 \subsection{Main results}
 Table~\ref{tab:main} and Fig.~\ref{fig:main} give the primary results. \herald{} reaches AUROC \AurocFc{} and AUPRC \AuprcFc{} for 6\,h early prediction, and AUROC \AurocDt{} and AUPRC \AuprcDt{} for hourly detection. AUPRC is $5.9\times$ and $7.5\times$ the respective prevalence, so the models are far better than chance even though the absolute AUPRC is low; low hourly AUPRC is expected when positives are 1--2\% of rows. Scoring each stay by its highest hourly risk gives patient-level AUROC \PatAurocDt{} for detection.
 
@@ -243,7 +245,8 @@ Training on hospital A and testing on hospital B (and the reverse) lowers AUROC 
 
 \input{tables/t_transfer.tex}
 
-\subsection{Prediction horizon}
+\subsection{Prediction horizon and label timing}
+\label{sec:horizon}
 Lengthening the horizon does not raise AUROC (Fig.~\ref{fig:horizon}, Table~\ref{tab:horizon}): it is 0.825, 0.822 and 0.830 at 6, 12 and 24\,h. AUPRC rises from 0.060 to 0.192 only because the share of positive rows grows from 0.92\% to 3.08\%; the lift over prevalence actually falls from 6.5 to 6.2. Horizon alone is therefore not a route to better discrimination.
 
 \begin{figure}[!t]
@@ -255,9 +258,11 @@ Lengthening the horizon does not raise AUROC (Fig.~\ref{fig:horizon}, Table~\ref
 
 \input{tables/t_horizon.tex}
 
-\subsection{Care-process shortcuts}
+\textbf{Label timing.} The challenge label time $\tau_i^{+}$ is a derived quantity rather than a verified clinical onset, so we checked how sensitive the early-prediction result is to it without retraining. The saved 6\,h scores were re-scored against targets whose onset time is shifted 1, 3 and 6\,h earlier (rows at or after the shifted onset are dropped; later onsets cannot be evaluated because rows after $\tau_i^{+}$ were not scored). AUROC stays at 0.825, 0.826 and 0.826, within the intervals of the unshifted 0.824 [0.816, 0.831] (300 bootstrap replicates), and AUPRC moves from 0.055 to 0.053 while the share of positive rows falls from 0.92\% to 0.81\%. The result is therefore not sensitive to a few hours of label-timing error in this direction; it does not test alternative clinical definitions of onset.
+
+\subsection{Care-process shortcuts and the physiology-only model}
 \label{sec:ablation}
-Gain importance is dominated by measurement-timing features (53\% of top-15 gain for early prediction) and care-pathway variables (35\%), led by ICULOS (Fig.~\ref{fig:importance}). Such features describe clinical workflow as much as physiology. Removing ICULOS, admission time and unit lowers AUROC by only 0.005--0.006; also removing measurement timing lowers it by 0.026 (forecast) and 0.027 (detection) within a hospital, and by 0.041 and 0.033 across hospitals (Fig.~\ref{fig:ablation}, Table~\ref{tab:ablation}). The model still discriminates from physiology alone, but part of its score reflects \emph{how often} a patient is measured. This is a limitation for deployment, where charting practice changes.
+Gain importance is dominated by measurement-timing features (53\% of top-15 gain for early prediction) and care-pathway variables (35\%), led by ICULOS (Fig.~\ref{fig:importance}). Such features describe clinical workflow as much as physiology. Removing ICULOS, admission time and unit lowers AUROC by only 0.005--0.006; also removing measurement timing lowers it by 0.026 (early prediction) and 0.027 (hourly detection) within a hospital, and by 0.041 and 0.033 across hospitals (Fig.~\ref{fig:ablation}, Table~\ref{tab:ablation}). The physiology-only model, which we report as a named secondary result, reaches AUROC 0.798 for early prediction and 0.822 for hourly detection within a hospital, and 0.716 and 0.763 across hospitals (Table~\ref{tab:ablation}), so the model still discriminates from physiology alone, but part of its score reflects \emph{how often} a patient is measured. This is a limitation for deployment, where charting practice changes.
 
 \begin{figure*}[!t]
 \centering
@@ -403,7 +408,7 @@ Scoring whole stays retrospectively gives AUROC \AurocStay{} and AUPRC \AuprcSta
 \end{figure*}
 
 \subsection{Model families and negative results}
-A causal TCN reached AUROC 0.803 (forecast) and 0.820 (detection), below boosting, and averaging it with the boosted model did not help (Fig.~\ref{fig:family}, Table~\ref{tab:family}); we therefore dropped it from the final model. The second stage changes AUROC by $-0.001$ for early prediction and $+0.002$ for detection and lowers early-prediction AUPRC from 0.060 to 0.055 (Table~\ref{tab:stage}); all differences lie within the bootstrap intervals, so stacking adds little. We keep the two-stage model as the final model because that design was fixed before test results were examined. On validation patients only, personal-baseline features, a multi-horizon soft label, positive-class weighting and a three-configuration average all failed a pre-set adoption rule (Fig.~\ref{fig:negative}, Table~\ref{tab:negative}). The consistent picture is that the information in this dataset, not the learner, limits performance at roughly 0.82--0.85 AUROC for hourly tasks.
+A causal TCN reached AUROC 0.803 (early prediction) and 0.820 (hourly detection), below boosting, and averaging it with the boosted model did not help (Fig.~\ref{fig:family}, Table~\ref{tab:family}); we therefore dropped it from the final model. The second stage changes AUROC by $-0.001$ for early prediction and $+0.002$ for detection and lowers early-prediction AUPRC from 0.060 to 0.055 (Table~\ref{tab:stage}); all differences lie within the bootstrap intervals, so stacking adds little. We keep the two-stage model as the final model because that design was fixed before test results were examined. On validation patients only, personal-baseline features, a multi-horizon soft label, positive-class weighting and a three-configuration average all failed a pre-set adoption rule (Fig.~\ref{fig:negative}, Table~\ref{tab:negative}). The consistent picture is that the information in this dataset, not the learner, limits performance at roughly 0.82--0.85 AUROC for hourly tasks.
 
 \begin{figure*}[!t]
 \centering
@@ -455,7 +460,7 @@ C_i^{*}=\frac{d_i^{-}}{d_i^{+}+d_i^{-}}\in[0,1]
 is larger for alternatives closer to the ideal. Weights are a judgement; we therefore always show several weightings.
 
 \subsection{Earlier baseline models on identical patients}
-We scored \herald{} and the earlier baseline models on exactly the same 229{,}244 forecast rows (5{,}983 test patients) with one code path, using AUROC, AUPRC, patient AUROC, sensitivity at 90\% specificity and alerts per true positive (a cost criterion). \herald{} ranks first (C$^*$ \TopsisV{} vs.\ \TopsisL{} for the best earlier LightGBM) under all four weightings (Fig.~\ref{fig:topsis_models}, Fig.~\ref{fig:topsis_sens}, Table~\ref{tab:topsis_models}). The margin is small: AUPRC is nearly tied (0.0513 vs.\ 0.0510), and the earlier LightGBM is slightly ahead on patient AUROC and sensitivity. \herald{} was trained on 80\% of all patients in cross-validation, whereas the earlier models used 60\%, which slightly favors \herald{}.
+We scored \herald{} and the earlier baseline models on exactly the same 229{,}244 early-prediction rows (5{,}983 test patients) with one code path, using AUROC, AUPRC, patient AUROC, sensitivity at 90\% specificity and alerts per true positive (a cost criterion). \herald{} ranks first (C$^*$ \TopsisV{} vs.\ \TopsisL{} for the best earlier LightGBM) under all four weightings (Fig.~\ref{fig:topsis_models}, Fig.~\ref{fig:topsis_sens}, Table~\ref{tab:topsis_models}). The margin is small: AUPRC is nearly tied (0.0513 vs.\ 0.0510), and the earlier LightGBM is slightly ahead on patient AUROC and sensitivity. \herald{} was trained on 80\% of all patients in cross-validation, whereas the earlier models used 60\%, which slightly favors \herald{}.
 
 \begin{figure*}[!t]
 \centering
@@ -466,7 +471,7 @@ We scored \herald{} and the earlier baseline models on exactly the same 229{,}24
 
 \begin{table*}[!t]
 \centering\footnotesize\setlength{\tabcolsep}{3.4pt}
-\caption{TOPSIS on the \emph{identical} 229{,}244 forecast rows (5{,}983 test patients) of the earlier baseline models: criteria and closeness $C^*$ under four weightings. Equal weights are used because the original weights were not archived; AlertsPerTP is a cost criterion. \herald{} was trained on 80\% of patients per fold and the earlier models on 60\%, which slightly favors \herald{}.}
+\caption{TOPSIS on the \emph{identical} 229{,}244 early-prediction rows (5{,}983 test patients) of the earlier baseline models: criteria and closeness $C^*$ under four weightings. Equal weights are used because the original weights were not archived; AlertsPerTP is a cost criterion. \herald{} was trained on 80\% of patients per fold and the earlier models on 60\%, which slightly favors \herald{}.}
 \label{tab:topsis_models}
 \begin{adjustbox}{max width=\linewidth}
 \begin{tabular}{lccccccccc}
@@ -507,7 +512,7 @@ Causal enc.+aux & 0.771 & 0.038 & 0.737 & 0.457 & 24.9 & 0.059 & 0.126 & 0.025 &
 \textbf{Ethics.} The data are public, de-identified PhysioNet records used under their terms. The models are research prototypes, not clinical decision tools, and subgroup performance by age, sex and hospital is reported in Table~\ref{tab:subgroups}; race and ethnicity are not in the data, so fairness across them could not be assessed. Algorithmic bias is a documented risk for health-care prediction \cite{obermeyer2019}, and responsible deployment needs subgroup analysis, monitoring and governance \cite{wiens2019}. Known health inequalities between sociodemographic groups cannot be characterised here, because the data carry no race, ethnicity or socioeconomic information, and performance may differ in groups that are under-represented in the two hospitals. The intended users of such a system would be ICU clinicians receiving decision-support alerts; this study does not evaluate that use. The study was not registered, no protocol was prepared beyond the process log in the appendix, and no patients or members of the public were involved.
 
 \section{Limitations}
-(1) Both hospitals belong to one public challenge dataset; external validation on MIMIC-III or MIMIC-IV \cite{johnson2016,johnson2023} or eICU \cite{pollard2018} is needed. (2) Labels are the challenge's SepsisLabel, whose onset time is not verified clinically, and antibiotic and culture timestamps are unavailable. (3) The stay-level task is retrospective. (4) The descriptive reporting checklist in Appendix~\ref{app:checklist} is our judgement from the text we read and may omit practices that other authors followed but did not report. (5) The ablation and importance results use the single-stage boosted model on an earlier feature set. (6) Thresholds in the lead-time analysis are set on the pooled out-of-fold scores. (7) Subgroups are limited to age, sex and hospital, race and ethnicity are not available, and subgroup AUPRC has no interval; decision curves are at row level. (8) Our first training run used an early-stopping call that stopped on any metric; we discarded those runs and repeated everything with the corrected first-metric rule.
+(1) Both hospitals belong to one public challenge dataset; external validation on MIMIC-III or MIMIC-IV \cite{johnson2016,johnson2023} or eICU \cite{pollard2018} is needed. (2) Labels are the challenge's SepsisLabel, whose onset time is not verified clinically (a label-timing sensitivity check is in Sec.~\ref{sec:horizon}), and antibiotic and culture timestamps are unavailable. (3) The stay-level task is retrospective. (4) The descriptive reporting checklist in Appendix~\ref{app:checklist} is our judgement from the text we read and may omit practices that other authors followed but did not report. (5) The ablation and importance results use the single-stage boosted model on an earlier feature set. (6) Thresholds in the lead-time analysis are set on the pooled out-of-fold scores. (7) Subgroups are limited to age, sex and hospital, race and ethnicity are not available, and subgroup AUPRC has no interval; decision curves are at row level. (8) Our first training run used an early-stopping call that stopped on any metric; we discarded those runs and repeated everything with the corrected first-metric rule.
 
 \section{Conclusion}
 \herald{} combines a strictly causal, audited feature pipeline with two-stage boosting for 6\,h early prediction (AUROC \AurocFc, AUPRC \AuprcFc) and hourly detection (\AurocDt, \AuprcDt), plus a retrospective stay-level classifier (\AurocStay, \AuprcStay). Under patient-level cross-validation, natural prevalence and bootstrap intervals, performance is stable across folds but falls by 3--6 AUROC points across hospitals, and a large part of the signal is measurement timing. On identical test patients, a TOPSIS comparison shows \herald{} ahead of earlier baseline models by a small margin; we do not rank it against published scores, whose protocols differ. We hope the audit, the cross-hospital test and the disclosed negative results are useful reference points for future sepsis-prediction studies.
