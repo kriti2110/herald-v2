@@ -1,0 +1,34 @@
+{
+  "equal": {
+    "LightGBM": 0.9669,
+    "LightGBM-reg": 0.6629,
+    "LightGBM no-meas.": 0.4894,
+    "Causal enc.+aux": 0.0587,
+    "Causal encoder": 0.1787,
+    "HERALD (this work)": 0.9916
+  },
+  "AUROC-heavy": {
+    "LightGBM": 0.9364,
+    "LightGBM-reg": 0.7075,
+    "LightGBM no-meas.": 0.561,
+    "Causal enc.+aux": 0.1264,
+    "Causal encoder": 0.152,
+    "HERALD (this work)": 0.9928
+  },
+  "AUPRC-heavy": {
+    "LightGBM": 0.9751,
+    "LightGBM-reg": 0.6117,
+    "LightGBM no-meas.": 0.4021,
+    "Causal enc.+aux": 0.0253,
+    "Causal encoder": 0.2044,
+    "HERALD (this work)": 0.9965
+  },
+  "operating-point-heavy": {
+    "LightGBM": 0.9794,
+    "LightGBM-reg": 0.7742,
+    "LightGBM no-meas.": 0.6688,
+    "Causal enc.+aux": 0.0369,
+    "Causal encoder": 0.1159,
+    "HERALD (this work)": 0.9901
+  }
+}

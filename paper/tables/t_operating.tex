@@ -1,0 +1,20 @@
+\begin{table}[!t]
+\centering\scriptsize
+\caption{Row-level operating points of the final model (pooled out-of-fold; threshold set on the same predictions, so illustrative). A/TP = alerts per true positive.}
+\label{tab:operating}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lcccc}
+\toprule
+Task & Specificity & Sensitivity & Precision & A/TP \\
+\midrule
+Early 6\,h & 90\% & 0.523 & 0.047 & 21.5 \\
+Early 6\,h & 95\% & 0.399 & 0.069 & 14.4 \\
+Early 6\,h & 99\% & 0.105 & 0.089 & 11.2 \\
+\midrule
+Detection & 90\% & 0.563 & 0.093 & 10.7 \\
+Detection & 95\% & 0.404 & 0.129 & 7.8 \\
+Detection & 99\% & 0.152 & 0.217 & 4.6 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

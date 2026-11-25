@@ -1,0 +1,23 @@
+\begin{table*}[!t]
+\centering\scriptsize\setlength{\tabcolsep}{3pt}
+\caption{Published scores and TOPSIS on those scores. Scores are as reported under each study's \emph{own} protocol (datasets and test sets differ) and are not directly comparable. $C^*_A$: TOPSIS on (AUROC, AUPRC), equal weights, studies reporting both; $C^*_B$: TOPSIS on (AUROC, sensitivity, F1), equal weights, studies reporting all three; n/a = criteria not reported. $^\dagger$Quoted from \cite{mansoor2026}; original not retrieved. $^\ddagger$Row-level sensitivity at 90\% specificity. HERALD stay-level sensitivity, specificity and F1 use a threshold fitted on the other folds (Youden); the natural-prevalence F1 is 0.547.}
+\label{tab:lit_scores}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{3.6cm}ccccccc}
+\toprule
+Study & Task / protocol & AUROC & AUPRC & Sens. & Spec. & F1 & $C^*_A$ & $C^*_B$ \\
+\midrule
+SepsisAI \cite{gupta2024} & patient-level, balanced test & 0.95 & 0.96 & 0.882 & 0.968 & 0.921 & 1.000 & 0.780 \\
+LSTM-GAT \cite{khorram2026} & 12\,h, random split, internal test & 0.853 & -- & 0.706 & 0.872 & 0.627 & n/a & 0.000 \\
+Transformer \cite{tang2024} & eICU, matched cohort & $\le$0.99 & -- & 0.967 & -- & 0.959 & n/a & 1.000 \\
+MB-TCN (via \cite{mansoor2026})$^\dagger$ & PhysioNet 2019, own protocol & 0.892 & 0.527 & -- & -- & -- & 0.475 & n/a \\
+PoEMS (via \cite{mansoor2026})$^\dagger$ & PhysioNet 2019, own protocol & 0.911 & 0.675 & -- & -- & -- & 0.654 & n/a \\
+SupMix (via \cite{mansoor2026})$^\dagger$ & PhysioNet 2019, AP not AUPRC & 0.883 & 0.667 & -- & -- & -- & 0.642 & n/a \\
+\midrule
+\textbf{HERALD} hourly & natural prevalence, 5-fold CV & 0.852 & 0.134 & 0.563$^\ddagger$ & 0.900$^\ddagger$ & -- & 0.000 & n/a \\
+\textbf{HERALD} stay-level & natural prevalence, 5-fold CV & 0.950 & 0.765 & 0.858 & 0.900 & 0.547 & 0.766 & n/a \\
+\textbf{HERALD} stay-level & balanced 432/432 view of the same predictions & 0.950 & 0.955 & 0.858 & 0.900 & 0.876 & 0.994 & 0.683 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table*}

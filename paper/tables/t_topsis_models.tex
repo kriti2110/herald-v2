@@ -1,0 +1,19 @@
+\begin{table*}[!t]
+\centering\footnotesize\setlength{\tabcolsep}{3.4pt}
+\caption{TOPSIS on the \emph{identical} 229{,}244 forecast rows (5{,}983 test patients) of the earlier HERALD models: criteria and closeness $C^*$ under four weightings. Equal weights are used because the original weights were not archived; AlertsPerTP is a cost criterion.}
+\label{tab:topsis_models}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lccccccccc}
+\toprule
+Model & AUROC & AUPRC & PatAUROC & Sens@90 & A/TP & $C^*$ eq. & AUROC-hvy & AUPRC-hvy & Op.pt-hvy \\
+\midrule
+HERALD (ours) & 0.817 & 0.051 & 0.788 & 0.500 & 22.9 & 0.992 & 0.993 & 0.997 & 0.990 \\
+LightGBM & 0.810 & 0.051 & 0.790 & 0.500 & 22.8 & 0.967 & 0.936 & 0.975 & 0.979 \\
+LightGBM-reg & 0.811 & 0.046 & 0.789 & 0.495 & 23.1 & 0.663 & 0.708 & 0.612 & 0.774 \\
+LightGBM no-meas. & 0.807 & 0.043 & 0.775 & 0.493 & 23.2 & 0.489 & 0.561 & 0.402 & 0.669 \\
+Causal encoder & 0.756 & 0.041 & 0.731 & 0.459 & 24.8 & 0.179 & 0.152 & 0.204 & 0.116 \\
+Causal enc.+aux & 0.771 & 0.038 & 0.737 & 0.457 & 24.9 & 0.059 & 0.126 & 0.025 & 0.037 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table*}

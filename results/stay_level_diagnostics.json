@@ -1,0 +1,37 @@
+{
+  "AUROC_from_stay_length_alone": 0.5232020666858956,
+  "median_hours_septic": 37.5,
+  "median_hours_nonseptic": 39.0,
+  "primary_CV_AUROC": 0.9501551712265164,
+  "primary_CV_AUPRC": 0.7653248262451832,
+  "AUROC_within_length_quartiles": {
+    "hours[8,24]": {
+      "n": 9675,
+      "septic": 1088,
+      "AUROC": 0.9549392592427678,
+      "AUPRC": 0.8004343272344084
+    },
+    "hours[24,38]": {
+      "n": 9177,
+      "septic": 378,
+      "AUROC": 0.9209815809997649,
+      "AUPRC": 0.4877066133396784
+    },
+    "hours[38,47]": {
+      "n": 10942,
+      "septic": 206,
+      "AUROC": 0.8822155383213,
+      "AUPRC": 0.18616022547002584
+    },
+    "hours[47,336]": {
+      "n": 10542,
+      "septic": 1260,
+      "AUROC": 0.960304891187244,
+      "AUPRC": 0.8658578293156718
+    }
+  },
+  "balanced_432_432_view": {
+    "AUROC": 0.9504360907493141,
+    "AUPRC": 0.9550037127998803
+  }
+}

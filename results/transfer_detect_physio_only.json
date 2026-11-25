@@ -1,0 +1,76 @@
+[
+  {
+    "tag": "trainA_testB",
+    "n_test_patients": 20000,
+    "n_test_rows": 761995,
+    "n_test_pos": 10780,
+    "prevalence": 0.014147074455869133,
+    "AUROC": 0.7869487731668141,
+    "AUPRC": 0.06712057448890393,
+    "patient_AUROC": 0.7921295230888645,
+    "patient_AUPRC": 0.3002466077856115,
+    "patient_balanced_view": {
+      "n_per_class": 432,
+      "AUROC": 0.7931208606610082,
+      "AUPRC": 0.8049279956214888
+    },
+    "Brier_calibrated": 0.013559989459217953,
+    "ECE_calibrated": 0.0019815240597928887,
+    "best_iteration": 455,
+    "seconds": 20,
+    "top_features_gain": {
+      "sirs_hours_so_far": 23078.701206207275,
+      "Lactate_xmax": 10539.348386764526,
+      "Temp_xmax": 10211.68638420105,
+      "Lactate_xmin": 8148.749852657318,
+      "Lactate": 7873.311994552612,
+      "SBP_xmax": 7202.633653640747,
+      "FiO2_xmax": 6658.327109336853,
+      "Resp_mean6": 6579.314245700836,
+      "Calcium_xmin": 6460.468074321747,
+      "FiO2_xmin": 6297.7902154922485,
+      "AST_xmin": 6277.283759593964,
+      "Temp": 6149.773156166077,
+      "sirs": 6036.756091117859,
+      "Phosphate_xmin": 5724.683930873871,
+      "Resp_xmax": 5682.978356361389
+    }
+  },
+  {
+    "tag": "trainB_testA",
+    "n_test_patients": 20336,
+    "n_test_rows": 790215,
+    "n_test_pos": 17136,
+    "prevalence": 0.02168523756192935,
+    "AUROC": 0.7564057431548026,
+    "AUPRC": 0.07984108332173749,
+    "patient_AUROC": 0.7642383847621527,
+    "patient_AUPRC": 0.3155379484889071,
+    "patient_balanced_view": {
+      "n_per_class": 432,
+      "AUROC": 0.7631477462705761,
+      "AUPRC": 0.7695674732187495
+    },
+    "Brier_calibrated": 0.020739064867054725,
+    "ECE_calibrated": 0.005387346906708217,
+    "best_iteration": 738,
+    "seconds": 38,
+    "top_features_gain": {
+      "sirs_hours_so_far": 11244.789040088654,
+      "FiO2_xmax": 10304.203165769577,
+      "pH_xmin": 9889.999469280243,
+      "pH": 9011.960343837738,
+      "EtCO2_std6": 8509.949505329132,
+      "sirs": 8334.780550956726,
+      "WBC_xmax": 7227.889501571655,
+      "Temp_xmax": 6801.897403717041,
+      "PaCO2": 6575.639279842377,
+      "pH_d12": 6271.434720993042,
+      "WBC_d12": 6212.918117761612,
+      "Temp_max6": 6133.395167827606,
+      "EtCO2": 6041.519830942154,
+      "PaCO2_xmin": 6022.004075527191,
+      "FiO2": 5996.673520088196
+    }
+  }
+]

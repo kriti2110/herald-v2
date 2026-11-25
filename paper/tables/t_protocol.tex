@@ -1,0 +1,23 @@
+\begin{table}[!t]
+\centering\footnotesize
+\caption{Cohort and evaluation protocol.}
+\label{tab:protocol}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{ll}
+\toprule
+Item & Value \\
+\midrule
+Hourly ICU records (rows) & 1{,}552{,}210 \\
+ICU stays (hospital A / B) & 40{,}336 (20{,}336 / 20{,}000) \\
+Septic stays (ever SepsisLabel $=1$) & 2{,}932 (7.27\%) \\
+Forecast rows / positives (6\,h) & 1{,}524{,}294 / 14{,}079 (0.92\%) \\
+Detection positives (hourly) & 27{,}916 (1.80\%) \\
+Outer evaluation & 5 patient-level stratified folds (seed 42) \\
+Inner split (per outer fold) & 75 / 12.5 / 12.5\% fit / val / calibration patients \\
+Cross-hospital & train A$\to$test B and B$\to$A \\
+Test-set handling & natural prevalence; never resampled \\
+Uncertainty & patient-clustered bootstrap (1000 reps) \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

@@ -1,0 +1,62 @@
+{
+  "forecast/A_base": {
+    "val_AUROC": 0.8237698653719054,
+    "val_AUPRC": 0.05885189496995247,
+    "iters": 40,
+    "s": 34
+  },
+  "forecast/B": {
+    "val_AUROC": 0.8371575131698508,
+    "val_AUPRC": 0.07194955128834281,
+    "iters": 156,
+    "s": 35
+  },
+  "forecast/C": {
+    "val_AUROC": 0.8368372733053512,
+    "val_AUPRC": 0.06925064403738236,
+    "iters": 200,
+    "s": 35
+  },
+  "forecast/D_extra": {
+    "val_AUROC": 0.8370456657664198,
+    "val_AUPRC": 0.06971296001981542,
+    "iters": 438,
+    "s": 58
+  },
+  "forecast/E_small": {
+    "val_AUROC": 0.8357646650498503,
+    "val_AUPRC": 0.07115134468571295,
+    "iters": 339,
+    "s": 43
+  },
+  "detect/A_base": {
+    "val_AUROC": 0.8544111978137214,
+    "val_AUPRC": 0.1284508710610226,
+    "iters": 103,
+    "s": 32
+  },
+  "detect/B": {
+    "val_AUROC": 0.8584737620072422,
+    "val_AUPRC": 0.14200688861538854,
+    "iters": 300,
+    "s": 34
+  },
+  "detect/C": {
+    "val_AUROC": 0.8581567372076275,
+    "val_AUPRC": 0.14017218824949343,
+    "iters": 461,
+    "s": 37
+  },
+  "detect/D_extra": {
+    "val_AUROC": 0.8587169049954625,
+    "val_AUPRC": 0.14514087030675335,
+    "iters": 442,
+    "s": 89
+  },
+  "detect/E_small": {
+    "val_AUROC": 0.8556752372786578,
+    "val_AUPRC": 0.1426999735156836,
+    "iters": 697,
+    "s": 100
+  }
+}

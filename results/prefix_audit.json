@@ -1,0 +1,14 @@
+{
+  "n_patients": 200,
+  "n_prefix_cuts": 1688,
+  "n_feature_comparisons": 518216,
+  "n_causal_features": 306,
+  "tolerance": {
+    "rtol": 0.0001,
+    "atol": 0.0001
+  },
+  "causal_features_violating": {},
+  "PASS_all_306_causal_features": true,
+  "negative_control_LEAKY_HR_centered5_violations": 1412,
+  "negative_control_detected": true
+}

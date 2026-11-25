@@ -1,0 +1,20 @@
+\begin{table*}[!t]
+\centering\footnotesize
+\caption{Final results at natural prevalence (pooled out-of-fold predictions; 95\% patient-clustered bootstrap CI). Patient AUROC scores each stay by its highest hourly risk.}
+\label{tab:main}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{llcccc}
+\toprule
+Task & Setting & AUROC [95\% CI] & AUPRC [95\% CI] & Patient AUROC & Prevalence \\
+\midrule
+Early prediction 6\,h & 5-fold CV & 0.824 [0.817, 0.832] & 0.055 [0.051, 0.059] & 0.795 & 0.92\% \\
+Hourly detection & 5-fold CV & 0.852 [0.846, 0.858] & 0.134 [0.126, 0.143] & 0.870 & 1.80\% \\
+Stay-level detection & 5-fold CV & 0.950 [0.946, 0.954] & 0.765 [0.751, 0.779] & -- & 7.27\% \\
+\midrule
+Early prediction 6\,h & A$\leftrightarrow$B & 0.773 [0.764, 0.782] & 0.041 [0.038, 0.044] & 0.706 & 0.92\% \\
+Hourly detection & A$\leftrightarrow$B & 0.795 [0.788, 0.802] & 0.088 [0.082, 0.094] & 0.796 & 1.80\% \\
+Stay-level detection & A$\leftrightarrow$B & 0.916 [0.910, 0.921] & 0.594 [0.572, 0.615] & -- & 7.27\% \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table*}

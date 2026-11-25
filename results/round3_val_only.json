@@ -1,0 +1,67 @@
+{
+  "forecast/E0_v2_features": {
+    "val_AUROC": 0.8386159715873305,
+    "val_AUPRC": 0.0739684486233564,
+    "iters": 135
+  },
+  "forecast/E1_plus_personal_baseline": {
+    "val_AUROC": 0.8347146481544652,
+    "val_AUPRC": 0.07797624710726467,
+    "iters": 133
+  },
+  "forecast/E2_multihorizon_soft_label": {
+    "val_AUROC": 0.8372603111932351,
+    "val_AUPRC": 0.06996903182706876,
+    "iters": 243
+  },
+  "forecast/E3_pos_weight3": {
+    "val_AUROC": 0.8156650498960537,
+    "val_AUPRC": 0.06507722074182058,
+    "iters": 1876
+  },
+  "forecast/cfg_C_v3": {
+    "val_AUROC": 0.8355052838706629,
+    "val_AUPRC": 0.07897186201212182,
+    "iters": 268
+  },
+  "forecast/cfg_D_v3": {
+    "val_AUROC": 0.8354108384158929,
+    "val_AUPRC": 0.06701081189321104,
+    "iters": 310
+  },
+  "forecast/E4_avg_of_3_configs": {
+    "val_AUROC": 0.8375585258569074,
+    "val_AUPRC": 0.07593106688588748,
+    "iters": null
+  },
+  "detect/E0_v2_features": {
+    "val_AUROC": 0.8608357388782555,
+    "val_AUPRC": 0.1384596625251353,
+    "iters": 506
+  },
+  "detect/E1_plus_personal_baseline": {
+    "val_AUROC": 0.8577903619252202,
+    "val_AUPRC": 0.14542734887922812,
+    "iters": 500
+  },
+  "detect/E3_pos_weight3": {
+    "val_AUROC": 0.8479288421049953,
+    "val_AUPRC": 0.12562933446021424,
+    "iters": 2977
+  },
+  "detect/cfg_B_v3": {
+    "val_AUROC": 0.8588969132084263,
+    "val_AUPRC": 0.14112411607262462,
+    "iters": 300
+  },
+  "detect/cfg_C_v3": {
+    "val_AUROC": 0.8590219467337243,
+    "val_AUPRC": 0.14229789788910666,
+    "iters": 563
+  },
+  "detect/E4_avg_of_3_configs": {
+    "val_AUROC": 0.8606600109103539,
+    "val_AUPRC": 0.14597789250419035,
+    "iters": null
+  }
+}

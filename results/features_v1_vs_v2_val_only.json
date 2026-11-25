@@ -1,0 +1,22 @@
+{
+  "X.npy/forecast": {
+    "val_AUROC": 0.8371575131698508,
+    "val_AUPRC": 0.07194955128834281,
+    "iters": 156
+  },
+  "X.npy/detect": {
+    "val_AUROC": 0.8587169049954625,
+    "val_AUPRC": 0.14514087030675335,
+    "iters": 442
+  },
+  "X2.npy/forecast": {
+    "val_AUROC": 0.8386159715873305,
+    "val_AUPRC": 0.0739684486233564,
+    "iters": 135
+  },
+  "X2.npy/detect": {
+    "val_AUROC": 0.8608357388782555,
+    "val_AUPRC": 0.1384596625251353,
+    "iters": 506
+  }
+}

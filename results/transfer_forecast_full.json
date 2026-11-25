@@ -1,0 +1,76 @@
+[
+  {
+    "tag": "trainA_testB",
+    "n_test_patients": 20000,
+    "n_test_rows": 751215,
+    "n_test_pos": 5185,
+    "prevalence": 0.006902151847340642,
+    "AUROC": 0.7677131494540093,
+    "AUPRC": 0.030959801642122836,
+    "patient_AUROC": 0.7156248849571698,
+    "patient_AUPRC": 0.2646847638071941,
+    "patient_balanced_view": {
+      "n_per_class": 432,
+      "AUROC": 0.7171053562242798,
+      "AUPRC": 0.7660172876397604
+    },
+    "Brier_calibrated": 0.006873498682320836,
+    "ECE_calibrated": 0.003419467473708353,
+    "best_iteration": 102,
+    "seconds": 11,
+    "top_features_gain": {
+      "HR_cnt": 28759.31046104431,
+      "ICULOS": 28431.844804763794,
+      "O2Sat_cnt": 14854.434997558594,
+      "MAP_cnt": 13553.801071166992,
+      "Resp_cnt": 9231.578577041626,
+      "SBP_cnt": 5398.341552734375,
+      "FiO2_stale": 4343.563159942627,
+      "Phosphate_cnt": 3814.654899597168,
+      "Resp_min24": 3710.122528076172,
+      "FiO2_rate": 2924.5052337646484,
+      "shock_index": 2758.848892211914,
+      "HospAdmTime": 2515.369581222534,
+      "Resp_min6": 2499.8169174194336,
+      "SBP_max24": 2300.306987762451,
+      "SBP_rate": 2207.652488708496
+    }
+  },
+  {
+    "tag": "trainB_testA",
+    "n_test_patients": 20336,
+    "n_test_rows": 773079,
+    "n_test_pos": 8894,
+    "prevalence": 0.011504645708912025,
+    "AUROC": 0.7579328090522985,
+    "AUPRC": 0.052448092939778056,
+    "patient_AUROC": 0.7052135934620849,
+    "patient_AUPRC": 0.3855502351563373,
+    "patient_balanced_view": {
+      "n_per_class": 432,
+      "AUROC": 0.704320599172668,
+      "AUPRC": 0.7611940755067872
+    },
+    "Brier_calibrated": 0.011129390647039642,
+    "ECE_calibrated": 0.0020347408211056585,
+    "best_iteration": 144,
+    "seconds": 16,
+    "top_features_gain": {
+      "ICULOS": 22244.29149246216,
+      "O2Sat_cnt": 12373.725059509277,
+      "HR_cnt": 12101.766321182251,
+      "DBP_cnt": 7498.46689414978,
+      "MAP_cnt": 6029.747827529907,
+      "HospAdmTime": 4661.368808746338,
+      "Temp_xmax": 3167.367012023926,
+      "Resp_mean24": 2876.69189453125,
+      "WBC_xmax": 2793.3565998077393,
+      "FiO2_xmax": 2435.5142784118652,
+      "sirs_hours_so_far": 2388.358419418335,
+      "Calcium_xmin": 2256.427309036255,
+      "sirs_mean6": 2246.4460983276367,
+      "Resp_rate": 2149.2331047058105,
+      "EtCO2_xmin": 2012.86861038208
+    }
+  }
+]

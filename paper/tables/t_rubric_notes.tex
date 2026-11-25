@@ -1,0 +1,18 @@
+\begin{table*}[!t]
+\centering\scriptsize\setlength{\tabcolsep}{3pt}
+\caption{Evidence behind each rubric score (what the text we read states). ``None reported'' means not found in the text, not proof of absence.}
+\label{tab:rubric_notes}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{2.35cm}>{\raggedright\arraybackslash}p{2.35cm}>{\raggedright\arraybackslash}p{2.35cm}>{\raggedright\arraybackslash}p{2.35cm}>{\raggedright\arraybackslash}p{2.35cm}>{\raggedright\arraybackslash}p{2.35cm}}
+\toprule
+Study & Patient split & Natural prevalence & Uncertainty & Leakage audit & External & AUROC+AUPRC \\
+\midrule
+SepsisAI \cite{gupta2024} & \checkmark: random split at patient level & $\circ$: balanced 432+432 and a 34+432 prevalence set & $\times$: no CI or SD & $\times$: none reported & $\times$: none seen & \checkmark: both reported \\
+LSTM-GAT \cite{khorram2026} & $\times$: random; patient-level not stated & $\circ$: balancing not stated & $\circ$: mean (SD) over 5 seeds & $\times$: none reported & \checkmark: MIMIC-III (vitals only) & $\circ$: AUPRC numeric only for external set \\
+Transformer \cite{tang2024} & $\times$: patient-level not stated & $\times$: matched cases/controls & $\circ$: mean $\pm$ SD of 5-fold CV & $\times$: none reported & \checkmark: MIMIC external & $\times$: no AUPRC \\
+\midrule
+\herald{} (this work) & \checkmark: patient-disjoint folds & \checkmark: never resampled & \checkmark: bootstrap CI + fold SD & \checkmark: prefix audit + control & $\circ$: hospital A$\leftrightarrow$B only & \checkmark: both reported \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table*}

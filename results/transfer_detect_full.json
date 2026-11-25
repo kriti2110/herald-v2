@@ -1,0 +1,76 @@
+[
+  {
+    "tag": "trainA_testB",
+    "n_test_patients": 20000,
+    "n_test_rows": 761995,
+    "n_test_pos": 10780,
+    "prevalence": 0.014147074455869133,
+    "AUROC": 0.8053955483890989,
+    "AUPRC": 0.07276305512539685,
+    "patient_AUROC": 0.8022181261038578,
+    "patient_AUPRC": 0.36410316687691124,
+    "patient_balanced_view": {
+      "n_per_class": 432,
+      "AUROC": 0.8025439921982166,
+      "AUPRC": 0.8250676411031723
+    },
+    "Brier_calibrated": 0.013534073855836812,
+    "ECE_calibrated": 0.0024648624631735654,
+    "best_iteration": 333,
+    "seconds": 19,
+    "top_features_gain": {
+      "HR_cnt": 40547.34173297882,
+      "ICULOS": 21705.056770324707,
+      "Resp_cnt": 11000.032614707947,
+      "DBP_cnt": 8980.58303451538,
+      "FiO2": 6648.200934410095,
+      "SBP_cnt": 6548.314641952515,
+      "Unit1": 6541.4894371032715,
+      "Creatinine_cnt": 6450.281175613403,
+      "Platelets_cnt": 6346.458839416504,
+      "O2Sat_cnt": 6079.155279159546,
+      "HCO3_cnt": 5916.752897262573,
+      "FiO2_stale": 5493.87779045105,
+      "Temp": 5429.583685874939,
+      "Lactate": 5197.191436767578,
+      "Unit2": 5189.302737236023
+    }
+  },
+  {
+    "tag": "trainB_testA",
+    "n_test_patients": 20336,
+    "n_test_rows": 790215,
+    "n_test_pos": 17136,
+    "prevalence": 0.02168523756192935,
+    "AUROC": 0.7836563657996313,
+    "AUPRC": 0.09774827081658244,
+    "patient_AUROC": 0.7926452089233654,
+    "patient_AUPRC": 0.4117961927975307,
+    "patient_balanced_view": {
+      "n_per_class": 432,
+      "AUROC": 0.7916253536522635,
+      "AUPRC": 0.8095587124220119
+    },
+    "Brier_calibrated": 0.020642003660392864,
+    "ECE_calibrated": 0.005428723911958829,
+    "best_iteration": 529,
+    "seconds": 36,
+    "top_features_gain": {
+      "MAP_cnt": 20077.338842391968,
+      "HospAdmTime": 10884.462624549866,
+      "SaO2_stale": 9508.854402065277,
+      "PaCO2_stale": 8883.09947013855,
+      "HR_cnt": 8718.311152935028,
+      "ICULOS": 8201.356006145477,
+      "O2Sat_cnt": 8189.248857975006,
+      "pH_stale": 7600.045561790466,
+      "sirs": 7398.131449222565,
+      "WBC_d12": 7084.490323543549,
+      "Temp_xmax": 6839.737558841705,
+      "SBP_cnt": 6754.842555522919,
+      "FiO2_stale": 6273.38606262207,
+      "FiO2_xmax": 6272.271285057068,
+      "FiO2": 5747.275348186493
+    }
+  }
+]

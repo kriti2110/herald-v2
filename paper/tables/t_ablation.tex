@@ -1,0 +1,17 @@
+\begin{table}[!t]
+\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\caption{Shortcut ablation (AUROC, boosted model). ``No care'' drops ICULOS/admission time/unit; ``physio-only'' also drops all measurement-timing features.}
+\label{tab:ablation}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{llcccc}
+\toprule
+Task & Setting & All & No care & Physio-only & $\Delta$ \\
+\midrule
+Early 6\,h & CV & 0.824 & 0.818 & 0.798 & -0.026 \\
+Early 6\,h & A$\leftrightarrow$B & 0.758 & -- & 0.716 & -0.041 \\
+Detection & CV & 0.849 & 0.843 & 0.822 & -0.026 \\
+Detection & A$\leftrightarrow$B & 0.796 & -- & 0.763 & -0.033 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

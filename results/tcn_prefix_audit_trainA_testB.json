@@ -1,0 +1,6 @@
+{
+  "tag": "trainA_testB",
+  "patients": 40,
+  "max_abs_logit_diff_full_vs_prefix": 4.76837158203125e-07,
+  "PASS": true
+}

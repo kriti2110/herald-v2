@@ -1,0 +1,19 @@
+\begin{table}[!t]
+\centering\scriptsize
+\caption{Model configurations (chosen on validation patients only).}
+\label{tab:hyper}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{1.8cm}p{1.5cm}>{\raggedright\arraybackslash}p{4.3cm}}
+\toprule
+Model & Type & Setting \\
+\midrule
+Stage 1 (forecast) & LightGBM & lr .05, 31 leaves, min-child 500, feat-frac .3, $\ell_2$ 10 \\
+Stage 1 (detect) & LightGBM & lr .05, 31 leaves, min-child 2000, feat-frac .2, $\ell_2$ 30, extra-trees \\
+Stage 2 & LightGBM & lr .05, 15 leaves, min-child 500, feat-frac .5, $\ell_2$ 10 \\
+Stay-level & LightGBM & lr .03, 15 leaves, min-child 50, feat-frac .3, $\ell_2$ 10 \\
+Causal TCN & 6 blocks, $d{=}96$ & kernel 3, dilations 1--32, dropout .15, AdamW 2e-3, one-cycle, pos-weight 5 \\
+Early stopping & all GBMs & 100 rounds on validation log-loss (first metric) \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

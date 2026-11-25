@@ -1,0 +1,24 @@
+[
+  {
+    "tag": "trainA_testB",
+    "n_test_patients": 20000,
+    "prevalence": 0.014147074455869133,
+    "stage1_AUROC": 0.8152954214790469,
+    "stage1_AUPRC": 0.08516402354400404,
+    "stage2_AUROC": 0.8047882266843978,
+    "stage2_AUPRC": 0.07450994154186388,
+    "stage2_iters": 100,
+    "seconds": 64
+  },
+  {
+    "tag": "trainB_testA",
+    "n_test_patients": 20336,
+    "prevalence": 0.02168523756192935,
+    "stage1_AUROC": 0.7841959450674597,
+    "stage1_AUPRC": 0.10065553775932988,
+    "stage2_AUROC": 0.7795048366212718,
+    "stage2_AUPRC": 0.09514185100498604,
+    "stage2_iters": 356,
+    "seconds": 114
+  }
+]

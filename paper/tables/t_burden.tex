@@ -1,0 +1,17 @@
+\begin{table}[!t]
+\centering\scriptsize
+\caption{Alert burden at fixed row-level specificity (pooled out-of-fold; thresholds set on the same predictions, so illustrative). False alarms are alerts on rows with a negative target per 24 patient-hours. Lead time is the time from the first alert to the first positive label, median [IQR] over septic stays alerted before the label.}
+\label{tab:burden}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lccccc}
+\toprule
+Task & Spec. & False alarms / patient-day & Alerts / TP & Septic stays alerted & Lead time (h) \\
+\midrule
+Early 6 h & 90\% & 2.38 & 21.5 & 59\% & 42 [16--85] \\
+Early 6 h & 95\% & 1.19 & 14.4 & 43\% & 43 [17--85] \\
+Detection & 90\% & 2.36 & 10.7 & 57\% & 40 [14--83] \\
+Detection & 95\% & 1.18 & 7.8 & 44\% & 40 [14--86] \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

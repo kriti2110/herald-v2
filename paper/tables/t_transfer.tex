@@ -1,0 +1,16 @@
+\begin{table}[!t]
+\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\caption{Cross-hospital transfer (AUROC unless stated).}
+\label{tab:transfer}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lccccc}
+\toprule
+Task & CV & A$\to$B & B$\to$A & AUPRC A$\to$B & AUPRC B$\to$A \\
+\midrule
+Early prediction 6\,h & 0.824 & 0.773 & 0.762 & 0.033 & 0.052 \\
+Hourly detection & 0.852 & 0.805 & 0.780 & 0.075 & 0.095 \\
+Stay-level detection & 0.950 & 0.925 & 0.907 & 0.571 & 0.668 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

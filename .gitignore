@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.DS_Store
+cache/X*.npy
+cache/raw_long.parquet
+*.pt
+training_setA/
+training_setB/

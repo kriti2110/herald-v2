@@ -1,0 +1,19 @@
+\begin{table*}[!t]
+\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\caption{Reporting-rigor scorecard (\checkmark\,=1, $\circ$\,=0.5, $\times$\,=0) scored by the authors from the text we could read, and the resulting TOPSIS closeness with equal weight on headline AUROC and rigor. The rubric, scores and AUROCs are our judgement; AUROCs come from different protocols.}
+\label{tab:rigor}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lccccccccc}
+\toprule
+Study & Patient split & Natural prev. & Uncert. & Leakage audit & External & AUROC+AUPRC & Rigor & AUROC & $C^*$ \\
+\midrule
+HERALD (hourly) & \checkmark & \checkmark & \checkmark & \checkmark & $\circ$ & \checkmark & 0.92 & 0.852 & 0.873 \\
+HERALD (stay-level) & \checkmark & \checkmark & \checkmark & \checkmark & $\circ$ & \checkmark & 0.92 & 0.950 & 0.960 \\
+\midrule
+SepsisAI [5] & \checkmark & $\circ$ & $\times$ & $\times$ & $\times$ & \checkmark & 0.42 & 0.950 & 0.265 \\
+LSTM-GAT [6] & $\times$ & $\circ$ & $\circ$ & $\times$ & \checkmark & $\circ$ & 0.42 & 0.853 & 0.247 \\
+Transformer-eICU [7] & $\times$ & $\times$ & $\circ$ & $\times$ & \checkmark & $\times$ & 0.25 & 0.990 & 0.127 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table*}

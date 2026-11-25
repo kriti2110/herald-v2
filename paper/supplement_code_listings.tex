@@ -1,0 +1,74 @@
+% Supplementary code listings (moved out of the main paper). Requires \usepackage{listings} with the same \lstset as main.tex.
+
+\begin{lstlisting}[caption={Causal feature builder (excerpt): forward fill, staleness, expanding and trailing statistics. Nothing looks ahead.},label={lst:feat}]
+def build_features(raw):
+    df = raw.sort_values([PID, TIME])
+    g = df[PID]; gb = df.groupby(PID, sort=False)
+    pos = gb.cumcount()               # hour index within stay
+    for c in CONT:                    # 34 vitals and labs
+        obs = df[c].notna()
+        loc = gb[c].ffill()           # LOCF: uses the past only
+        loc_all[c] = loc
+        last = pd.Series(np.where(obs, pos, np.nan)).groupby(g).ffill()
+        stale = pos - last            # hours since last measured
+        cnt = obs.groupby(g).cumsum() # measurements so far
+        xmax = loc.groupby(g).cummax()        # stay-so-far
+        d12 = loc - loc.groupby(g).shift(12)  # positive shift only
+    for c in VITALS:                  # trailing windows end at t
+        for w in (3, 6, 12, 24):
+            r = loc_all[c].groupby(g).rolling(w, min_periods=1)
+            mean, sd = r.mean(), r.std()
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Stage 2: causal history of the stage-1 score. Every term uses only rows up to $t$.},label={lst:stack}]
+def hist_feats(codes, z, thr):        # z: stage-1 logit per row
+    s = pd.Series(z); gb = s.groupby(codes)
+    f = {"z": z, "z_cummax": gb.cummax()}
+    for w in (3, 6, 12, 24):
+        f[f"z_mean{w}"] = gb.rolling(w, min_periods=1).mean()
+    for w in (6, 24):
+        f[f"z_max{w}"] = gb.rolling(w, min_periods=1).max()
+    f["dz3"], f["dz6"] = s - gb.shift(3), s - gb.shift(6)
+    for name, t in thr.items():       # q90 / q99 of training scores
+        hit = pd.Series((z > t).astype(float)).groupby(codes)
+        f[f"n_{name}_6"] = hit.rolling(6, min_periods=1).sum()
+    return pd.DataFrame(f)
+# stage 1: 4 inner patient folds -> out-of-fold logits (train);
+#          test logit = mean of the 4 inner models
+# stage 2: LightGBM on hist_feats(z) + ICULOS + top-25 features
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Causal temporal block (benchmark model): left-only padding and per-timestep normalization.},label={lst:tcn}]
+class Block(nn.Module):
+    def __init__(self, d, dil, drop):
+        super().__init__()
+        self.pad = 2 * dil            # left-only padding
+        self.conv = nn.Conv1d(d, d, 3, dilation=dil)
+        self.norm = nn.LayerNorm(d)   # per timestep, not over time
+        self.drop = nn.Dropout(drop)
+
+    def forward(self, x):             # x: (batch, time, d)
+        h = F.pad(x.transpose(1, 2), (self.pad, 0))
+        h = self.conv(h).transpose(1, 2)
+        return x + self.drop(F.gelu(self.norm(h)))
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Patient-clustered bootstrap (AUROC) and TOPSIS closeness.},label={lst:eval}]
+def fast_boot(y, p, pidx, reps=1000):  # resample whole patients
+    o = np.argsort(p, kind="stable"); y, p, pidx = y[o], p[o], pidx[o]
+    n = pidx.max() + 1; au = []
+    for _ in range(reps):
+        w = np.bincount(rng.integers(0, n, n), minlength=n)[pidx]
+        wp, wn = w * y, w * (1 - y)
+        cn = np.cumsum(wn) - wn
+        au.append((wp * cn).sum() / (wp.sum() * wn.sum()))
+    return np.percentile(au, [2.5, 97.5])
+
+def topsis(M, w, cost):
+    R = M / np.sqrt((M ** 2).sum(0)); V = R * w
+    best = np.where(cost, V.min(0), V.max(0))
+    worst = np.where(cost, V.max(0), V.min(0))
+    dp = np.sqrt(((V - best) ** 2).sum(1))
+    dm = np.sqrt(((V - worst) ** 2).sum(1))
+    return dm / (dp + dm)             # closeness C* in [0, 1]
+\end{lstlisting}

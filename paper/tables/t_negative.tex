@@ -1,0 +1,21 @@
+\begin{table}[!t]
+\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\caption{Ideas tested on validation patients only (change vs.\ the 370-feature set). None met the pre-set adoption rule ($\Delta$AUROC $\ge +0.001$ and AUPRC not down $>3\%$).}
+\label{tab:negative}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{llcc}
+\toprule
+Task & Idea & $\Delta$ val AUROC & $\Delta$ val AUPRC \\
+\midrule
+Early 6\,h & Personal-baseline features & -0.0039 & +5.4\% \\
+Early 6\,h & Multi-horizon soft label & -0.0014 & -5.4\% \\
+Early 6\,h & Positive weight $\times$3 & -0.0230 & -12.0\% \\
+Early 6\,h & Mean of 3 configurations & -0.0011 & +2.7\% \\
+\midrule
+Detection & Personal-baseline features & -0.0030 & +5.0\% \\
+Detection & Positive weight $\times$3 & -0.0129 & -9.3\% \\
+Detection & Mean of 3 configurations & -0.0002 & +5.4\% \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

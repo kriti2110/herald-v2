@@ -1,0 +1,76 @@
+[
+  {
+    "tag": "trainA_testB",
+    "n_test_patients": 20000,
+    "n_test_rows": 751215,
+    "n_test_pos": 5185,
+    "prevalence": 0.006902151847340642,
+    "AUROC": 0.7602302442820732,
+    "AUPRC": 0.030097661765566174,
+    "patient_AUROC": 0.702447684435223,
+    "patient_AUPRC": 0.22640647350522358,
+    "patient_balanced_view": {
+      "n_per_class": 432,
+      "AUROC": 0.704451919367284,
+      "AUPRC": 0.7282492044847327
+    },
+    "Brier_calibrated": 0.0067896128432035265,
+    "ECE_calibrated": 0.002528013863005416,
+    "best_iteration": 118,
+    "seconds": 9,
+    "top_features_gain": {
+      "sirs_hours_so_far": 24325.344623565674,
+      "Calcium_xmin": 7278.574834823608,
+      "Phosphate_xmax": 6557.918079376221,
+      "Temp_xmax": 6401.371845245361,
+      "SBP_xmax": 5651.2726402282715,
+      "Phosphate_xmin": 5106.726511001587,
+      "Resp_xmax": 4787.8843994140625,
+      "Lactate_xmin": 4479.170913696289,
+      "Resp_min24": 4452.174724578857,
+      "Lactate_xmax": 4199.873149871826,
+      "Lactate_d12": 4113.228076934814,
+      "SBP_xmin": 3613.5543880462646,
+      "BUN_xmax": 3369.489212036133,
+      "Calcium": 3157.1645889282227,
+      "FiO2_xmax": 3055.937412261963
+    }
+  },
+  {
+    "tag": "trainB_testA",
+    "n_test_patients": 20336,
+    "n_test_rows": 773079,
+    "n_test_pos": 8894,
+    "prevalence": 0.011504645708912025,
+    "AUROC": 0.7272778119081786,
+    "AUPRC": 0.04414073841807277,
+    "patient_AUROC": 0.6686435628204493,
+    "patient_AUPRC": 0.2529151689887834,
+    "patient_balanced_view": {
+      "n_per_class": 432,
+      "AUROC": 0.6677113608110424,
+      "AUPRC": 0.7047374827047207
+    },
+    "Brier_calibrated": 0.01123790489419473,
+    "ECE_calibrated": 0.003247674314381384,
+    "best_iteration": 261,
+    "seconds": 18,
+    "top_features_gain": {
+      "sirs_hours_so_far": 23425.64180469513,
+      "EtCO2_d24": 7626.632588386536,
+      "Temp_xmax": 6016.926688194275,
+      "PaCO2_xmin": 5881.551623344421,
+      "EtCO2_std6": 5616.77771282196,
+      "WBC_xmax": 5027.862606048584,
+      "Glucose_xmin": 4982.1215171813965,
+      "O2Sat_xmin": 3921.095803260803,
+      "Calcium_xmin": 3355.0208883285522,
+      "FiO2_xmax": 3177.9763889312744,
+      "HR_xmin": 3084.465410232544,
+      "sirs_mean6": 3060.9659423828125,
+      "PTT_xmin": 3022.2013120651245,
+      "PTT": 2968.428189277649,
+      "SBP_xmax": 2929.842614173889
+    }
+  }
+]

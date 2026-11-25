@@ -1,0 +1,20 @@
+\begin{table*}[!t]
+\centering\footnotesize
+\caption{Per-fold results (two-stage model; stay-level classifier). Folds are patient-disjoint.}
+\label{tab:folds}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lcccccc}
+\toprule
+ & Forecast AUROC & Forecast AUPRC & Detect AUROC & Detect AUPRC & Stay AUROC & Stay AUPRC \\
+\midrule
+Fold 0 & 0.830 & 0.053 & 0.853 & 0.129 & 0.952 & 0.772 \\
+Fold 1 & 0.834 & 0.051 & 0.850 & 0.135 & 0.953 & 0.764 \\
+Fold 2 & 0.821 & 0.061 & 0.857 & 0.144 & 0.949 & 0.770 \\
+Fold 3 & 0.827 & 0.062 & 0.855 & 0.137 & 0.957 & 0.772 \\
+Fold 4 & 0.811 & 0.056 & 0.845 & 0.132 & 0.941 & 0.750 \\
+\midrule
+\textbf{Mean $\pm$ SD} & 0.825 $\pm$ 0.009 & 0.057 $\pm$ 0.005 & 0.852 $\pm$ 0.005 & 0.135 $\pm$ 0.006 & 0.950 $\pm$ 0.006 & 0.766 $\pm$ 0.009 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table*}

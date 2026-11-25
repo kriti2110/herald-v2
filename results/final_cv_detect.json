@@ -1,0 +1,57 @@
+[
+  {
+    "tag": "fold0",
+    "n_test_patients": 8068,
+    "prevalence": 0.018050448524345244,
+    "stage1_AUROC": 0.8521096130303601,
+    "stage1_AUPRC": 0.12475473174832925,
+    "stage2_AUROC": 0.853257007995636,
+    "stage2_AUPRC": 0.12948286181776725,
+    "stage2_iters": 74,
+    "seconds": 129
+  },
+  {
+    "tag": "fold1",
+    "n_test_patients": 8067,
+    "prevalence": 0.017985286233779655,
+    "stage1_AUROC": 0.849064170135587,
+    "stage1_AUPRC": 0.13602965356750343,
+    "stage2_AUROC": 0.8501775892590298,
+    "stage2_AUPRC": 0.13517481746507257,
+    "stage2_iters": 73,
+    "seconds": 201
+  },
+  {
+    "tag": "fold2",
+    "n_test_patients": 8067,
+    "prevalence": 0.017938707536898527,
+    "stage1_AUROC": 0.8543925776523956,
+    "stage1_AUPRC": 0.14166534962304508,
+    "stage2_AUROC": 0.8572745437523889,
+    "stage2_AUPRC": 0.1441338785317511,
+    "stage2_iters": 161,
+    "seconds": 271
+  },
+  {
+    "tag": "fold3",
+    "n_test_patients": 8067,
+    "prevalence": 0.018108320327268144,
+    "stage1_AUROC": 0.8529332581116489,
+    "stage1_AUPRC": 0.13285029176384666,
+    "stage2_AUROC": 0.8551101089845068,
+    "stage2_AUPRC": 0.13722994129019345,
+    "stage2_iters": 115,
+    "seconds": 161
+  },
+  {
+    "tag": "fold4",
+    "n_test_patients": 8067,
+    "prevalence": 0.017841750593603503,
+    "stage1_AUROC": 0.8426076330759147,
+    "stage1_AUPRC": 0.12968186736345214,
+    "stage2_AUROC": 0.8447512497570434,
+    "stage2_AUPRC": 0.1324172678069258,
+    "stage2_iters": 78,
+    "seconds": 177
+  }
+]

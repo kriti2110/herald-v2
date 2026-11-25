@@ -1,0 +1,21 @@
+\begin{table}[!t]
+\centering\footnotesize
+\caption{Causal feature groups (all strictly backward-looking).}
+\label{tab:features}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lrp{4.4cm}}
+\toprule
+Group & \# & Content \\
+\midrule
+Last observed value & 34 & LOCF of 34 vitals/labs \\
+Measurement timing & 104 & staleness, counts, rates, labs ordered 6/24\,h \\
+Trailing / expanding & 191 & mean/std/min/max (3--24\,h), slopes, deltas, stay-so-far extremes \\
+Clinical composites & 35 & shock index, SIRS, qSOFA, organ-dysfunction count, flags \\
+Static & 2 & age, sex \\
+Care pathway & 4 & ICULOS, admission time, unit 1/2 \\
+\midrule
+\textbf{Total} & \textbf{370} &  \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

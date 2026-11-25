@@ -1,0 +1,18 @@
+\begin{table}[!t]
+\centering\scriptsize
+\caption{Value of the second stage (5-fold CV, pooled). It changes AUROC by $-0.001$ (forecast) and $+0.002$ (detection).}
+\label{tab:stage}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{llcc}
+\toprule
+Task & Model & AUROC [95\% CI] & AUPRC [95\% CI] \\
+\midrule
+Early 6\,h & Stage 1 only & 0.825 [0.817, 0.833] & 0.060 [0.055, 0.065] \\
+Early 6\,h & Stage 1 + 2 (final) & 0.824 [0.817, 0.832] & 0.055 [0.051, 0.059] \\
+\midrule
+Detection & Stage 1 only & 0.850 [0.845, 0.856] & 0.132 [0.124, 0.141] \\
+Detection & Stage 1 + 2 (final) & 0.852 [0.846, 0.858] & 0.134 [0.126, 0.143] \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
