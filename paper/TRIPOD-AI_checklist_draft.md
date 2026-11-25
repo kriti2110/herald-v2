@@ -72,9 +72,10 @@ official checklist; copy the entries into the official template and use its exac
 | Code availability | Reported | https://github.com/kriti2110/herald-v2 (private until the authors make it public) |
 
 ## Items for the authors to close before submission
+Closed in the manuscript (Methods and Discussion, Ethics): no calendar dates available; no sample-size calculation; explicit missing-data statement;
+health inequalities and intended users; not registered, no patient or public involvement. Table entries above marked **Gap** for these topics are now **Reported**.
+
+Still open:
 1. Declarations: funding, competing interests, CRediT.
-2. Add: no calendar dates available; no sample-size calculation; no patient or public involvement; not registered.
-3. Add one or two sentences on health inequalities and intended users.
-4. Add an explicit missing-data sentence to Methods: after forward-fill, remaining missing values are left to LightGBM's native missing-value handling (checked against the code).
-5. Optionally add a descriptive table of age and sex for the cohort.
-6. Transfer these entries into the official TRIPOD+AI template with its exact item numbers.
+2. Optionally add a descriptive table of age and sex for the cohort.
+3. Transfer these entries into the official TRIPOD+AI template with its exact item numbers.
