@@ -113,7 +113,30 @@ Let $y_{it}\in\{0,1\}$ be SepsisLabel of stay $i$ at hour $t$ and $\tau_i^{+}$ t
 \end{itemize}
 The row-level positive rates differ by task and are quoted throughout: 0.92\% of rows for early prediction (6\,h) and 1.80\% for hourly detection, against 7.27\% of stays for stay-level detection (Table~\ref{tab:protocol}). They are the AUPRC baselines.
 
-\input{tables/t_protocol.tex}
+\begin{table}[!t]
+\centering\footnotesize
+\caption{Cohort and evaluation protocol.}
+\label{tab:protocol}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{ll}
+\toprule
+Item & Value \\
+\midrule
+Hourly ICU records (rows) & 1{,}552{,}210 \\
+ICU stays (hospital A / B) & 40{,}336 (20{,}336 / 20{,}000) \\
+Septic stays (ever SepsisLabel $=1$) & 2{,}932 (7.27\%) \\
+Forecast rows / positives (6\,h) & 1{,}524{,}294 / 14{,}079 (0.92\%) \\
+Detection positives (hourly) & 27{,}916 (1.80\%) \\
+Outer evaluation & 5 patient-level stratified folds (seed 42) \\
+Inner split (per outer fold) & stage 1: 4 inner folds, 12\% early-stopping holdout; stage 2: 85 / 15\% fit / early stopping \\
+Calibration & isotonic, fitted on the other four folds' out-of-fold scores \\
+Cross-hospital & train A$\to$test B and B$\to$A \\
+Test-set handling & natural prevalence; never resampled \\
+Uncertainty & patient-clustered bootstrap (1000 reps) \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
 
 \subsection{Strictly causal features}
 \label{sec:method}
@@ -178,7 +201,7 @@ As an alternative sequence model we train a causal multi-task temporal CNN: six 
 
 
 \subsection{Splits and uncertainty}
-All reported scores are \emph{out-of-fold}, and folds are grouped by patient because correlated observations from one patient must not be split across folds \cite{roberts2017}: patients are split into five stratified, patient-disjoint folds, and each patient is scored by models that never saw them. Within each training set, 75/12.5/12.5\% of patients are used for fitting, early stopping (validation log-loss) and isotonic calibration. Hyper-parameters were chosen on validation patients only, and test folds were touched once. We report pooled AUROC and AUPRC with 95\% intervals from a patient-clustered bootstrap: whole stays are re-weighted, so hourly correlation does not shrink the intervals. AUROC is the probability that a random positive outranks a random negative \cite{hanley1982}, whereas AUPRC and ROC curves are related but not interchangeable under imbalance \cite{davis2006,saito2015}. Calibration is often neglected yet decisive for clinical use \cite{vancalster2019}, so we also report reliability and Brier skill. A \emph{balanced view} (432 septic and 432 non-septic patients, repeated 200 times) is computed from the same predictions only to allow comparison with balanced-test studies; headline metrics are never computed on resampled data.
+All reported scores are \emph{out-of-fold}, and folds are grouped by patient because correlated observations from one patient must not be split across folds \cite{roberts2017}: patients are split into five stratified, patient-disjoint folds, and each patient is scored by models that never saw them. Within each outer training set (80\% of patients), stage 1 uses a 4-fold inner patient split: each inner model fits on 75\% of the training patients, of which 12\% are held out for early stopping (validation log-loss), and scores the remaining 25\%, which gives out-of-fold logits for every training row; the stage-2 model fits on 85\% of the training patients and stops early on the other 15\%. Isotonic calibration is applied afterwards and is fitted on the out-of-fold scores of the other four folds. Hyper-parameters were chosen on validation patients only, and test folds were touched once. We report pooled AUROC and AUPRC with 95\% intervals from a patient-clustered bootstrap: whole stays are re-weighted, so hourly correlation does not shrink the intervals. AUROC is the probability that a random positive outranks a random negative \cite{hanley1982}, whereas AUPRC and ROC curves are related but not interchangeable under imbalance \cite{davis2006,saito2015}. Calibration is often neglected yet decisive for clinical use \cite{vancalster2019}, so we also report reliability and Brier skill. A \emph{balanced view} (432 septic and 432 non-septic patients, repeated 200 times) is computed from the same predictions only to allow comparison with balanced-test studies; headline metrics are never computed on resampled data.
 
 \subsection{Subgroups, decision curves and alert burden}
 We report the performance of the final two-stage score within age bands ($<$45, 45--64, 65--79 and $\geq$80 years), sex (as coded in the challenge data) and hospital, using the pooled out-of-fold predictions. AUROC intervals use the patient-clustered bootstrap (300 replicates); AUPRC is a point estimate, reported with its lift over the subgroup's own prevalence. Race and ethnicity are not available in the challenge data. For decision-curve analysis \cite{vickers2006}, risks are calibrated by isotonic regression fitted on the out-of-fold scores of the other four folds and applied to the held-out fold, and the net benefit at threshold probability $p_t$ is computed over all evaluated rows,
