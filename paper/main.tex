@@ -13,6 +13,7 @@
 \usepackage{pgfplots}
 \usepgfplotslibrary{groupplots}
 \pgfplotsset{compat=1.16}
+\usetikzlibrary{arrows.meta,positioning}
 \lstset{language=Python,basicstyle=\ttfamily\fontsize{6.2}{7.4}\selectfont,breaklines=true,breakatwhitespace=false,frame=single,framerule=0.3pt,rulecolor=\color[gray]{0.6},
   backgroundcolor=\color[gray]{0.965},columns=fullflexible,keepspaces=true,showstringspaces=false,numbers=left,numberstyle=\tiny\color[gray]{0.45},numbersep=3pt,xleftmargin=9pt,
   keywordstyle=\bfseries\color{blue!55!black},commentstyle=\itshape\color{green!35!black},stringstyle=\color{orange!70!black},captionpos=b,aboveskip=3pt,belowskip=3pt,
@@ -31,7 +32,7 @@
 \affiliation[inst1]{organization={\textcolor{red}{[Affiliation]}}}
 
 \begin{abstract}
-Reported performance of ICU sepsis models depends on how labels are defined and tests are built: row-level splits, features that see future hours and balanced test sets inflate AUROC and especially AUPRC. We present \herald, a two-stage model for \emph{early prediction} (onset within 6\,h) and \emph{hourly detection} of sepsis, with an audited evaluation protocol. A prefix-invariance audit shows that all 370 features are unchanged when future rows are appended (\NCut{} cuts, \NCmp{} comparisons), while a deliberately non-causal control is flagged in \NCtrl{} cases. On the 40{,}336 stays of PhysioNet/CinC 2019, with patient-level 5-fold cross-validation, natural prevalence and patient-clustered bootstrap intervals, \herald{} reaches AUROC \AurocFc{} (AUPRC \AuprcFc) for early prediction and \AurocDt{} (\AuprcDt) for hourly detection; training on one hospital and testing on the other lowers these to \AurocFcT{} and \AurocDtT{}. AUROC differs by less than 0.02 across age bands and sexes, and decision curves show net benefit at low risk thresholds. A separate \emph{retrospective} stay-level classifier reaches AUROC \AurocStay{} (\AurocStayT{} across hospitals) and is not explained by stay length. Measurement-timing features carry part of the signal. On identical test patients, \herald{} ranks first among earlier baseline models by a small TOPSIS margin; published scores use incompatible protocols and are not ranked. Negative results (temporal CNN, personal-baseline features, soft labels, class weighting) are reported. Our contribution is a reproducible, leakage-audited evaluation protocol, not state-of-the-art accuracy.
+Reported performance of ICU sepsis models depends on how labels are defined and tests are built: row-level splits, features that see future hours and balanced test sets inflate AUROC and especially AUPRC. We present \herald, a two-stage gradient-boosting model for \emph{early prediction} (onset within 6\,h) and \emph{hourly detection} of sepsis, with an audited evaluation protocol. A prefix-invariance audit shows that all 370 features are unchanged when future rows are appended (\NCut{} cuts, \NCmp{} comparisons), while a deliberately non-causal control is flagged in \NCtrl{} cases. On the 40{,}336 ICU stays (2{,}932 septic) of PhysioNet/CinC 2019, from two hospital systems, with patient-level 5-fold cross-validation, natural prevalence and patient-clustered bootstrap intervals, \herald{} reaches AUROC \AurocFc{} (95\% CI 0.817--0.832; AUPRC \AuprcFc{}, 0.051--0.059) for early prediction and \AurocDt{} (0.846--0.858; AUPRC \AuprcDt{}, 0.126--0.143) for hourly detection. Training on one hospital and testing on the other lowers AUROC to \AurocFcT{} (0.764--0.782) and \AurocDtT{} (0.788--0.802). AUROC differs by less than 0.02 across age bands and sexes, and decision curves show net benefit at low risk thresholds. A separate \emph{retrospective} stay-level classifier reaches AUROC \AurocStay{} (0.946--0.954) and is not explained by stay length. Measurement-timing features carry part of the signal. On identical test patients, \herald{} ranks first among earlier baseline models by a small TOPSIS margin; published scores use incompatible protocols and are not ranked. Negative results are reported. Our contribution is a reproducible, leakage-audited evaluation protocol, not state-of-the-art accuracy. The study was not registered.
 \end{abstract}
 
 \begin{highlights}
@@ -102,7 +103,25 @@ Transformer \cite{tang2024} & eICU (+MIMIC) & 4/8/12\,h & 70:30 + 5-fold CV & Ma
 \label{sec:methods}
 \subsection{Data and cohort}
 \label{sec:data}
-We use PhysioNet/CinC 2019 training sets A and B: \NStays{} ICU stays (\NHospA{} from hospital A and \NHospB{} from hospital B) with hourly vital signs, laboratory values, demographics and an hourly SepsisLabel \cite{reyna2020}. After removing byte-identical duplicate files, \NSeptic{} stays (7.27\%) are septic; prevalence differs by hospital (8.8\% in A, 5.7\% in B). The public challenge data carry no calendar dates, so the period of data collection cannot be reported. All available stays were used and no formal sample-size calculation was performed. Table~\ref{tab:protocol} summarizes the protocol.
+We use PhysioNet/CinC 2019 training sets A and B: \NStays{} ICU stays (\NHospA{} from hospital A and \NHospB{} from hospital B) with hourly vital signs, laboratory values, demographics and an hourly SepsisLabel \cite{reyna2020}. After removing byte-identical duplicate files, \NSeptic{} stays (7.27\%) are septic; prevalence differs by hospital (8.8\% in A, 5.7\% in B). The public challenge data carry no calendar dates, so the period of data collection cannot be reported. Table~\ref{tab:protocol} summarizes the protocol and Fig.~\ref{fig:flow} the participant flow.
+
+\textbf{Representativeness.} The challenge organisers sourced the data from ICU patients in three hospital systems, of which two (A and B) were released for training. The data are therefore ICU stays from two hospital systems, labelled with the challenge's Sepsis-3-based SepsisLabel, and the case mix, charting practice and care pathways of other ICUs, countries and periods may differ; Table~\ref{tab:cohort} shows that even these two systems are not interchangeable.
+
+\textbf{Sample size.} All available stays were used. Formal minimum-sample-size criteria for prediction models are formulated for regression models with a prespecified number of parameters and do not transfer directly to 370 engineered features and a boosted-tree learner, so no such calculation was performed. We judged adequacy by the precision of the estimates instead: with \NSeptic{} septic stays (14{,}079 positive early-prediction rows and 27{,}916 positive hourly-detection rows), the 95\% bootstrap intervals on AUROC are about $\pm0.007$ and fold-to-fold variation is 0.005--0.009 (Sec.~\ref{sec:results}); each hospital alone contributes about 1{,}790 (A) and 1{,}142 (B) septic stays to the cross-hospital runs.
+
+\begin{figure}[!t]
+\centering
+\begin{tikzpicture}[node distance=0.5cm, box/.style={draw, rounded corners=2pt, align=center, font=\footnotesize, inner sep=4pt, text width=0.88\columnwidth}, arr/.style={-{Stealth[length=2mm]}, thick}]
+\node[box] (a) {40{,}338 hourly-record files downloaded\\(set A 20{,}338; set B 20{,}000)};
+\node[box, below=of a] (b) {2 byte-identical duplicate files removed (set A)};
+\node[box, below=of b] (c) {\textbf{40{,}336 ICU stays} (A 20{,}336; B 20{,}000), 1{,}552{,}210 hourly rows\\2{,}932 septic stays (7.27\%); 37{,}404 non-septic stays};
+\node[box, below=of c] (d) {\textbf{Evaluation units}\\Early prediction (6\,h): 1{,}524{,}294 rows, 14{,}079 positive (0.92\%)\\Hourly detection: 1{,}552{,}210 rows, 27{,}916 positive (1.80\%)\\Stay-level detection: 40{,}336 stays, 2{,}932 positive (7.27\%)};
+\node[box, below=of d] (e) {\textbf{Partitioning}\\5 patient-level folds (8{,}067--8{,}068 patients each), out-of-fold predictions\\Cross-hospital transfer: train A, test B; train B, test A};
+\draw[arr] (a)--(b); \draw[arr] (b)--(c); \draw[arr] (c)--(d); \draw[arr] (d)--(e);
+\end{tikzpicture}
+\caption{Participant flow from the downloaded files to the evaluation units. No stays were excluded other than the two duplicate files.}
+\label{fig:flow}
+\end{figure}
 
 \subsection{Tasks and temporal prefixes}
 Let $y_{it}\in\{0,1\}$ be SepsisLabel of stay $i$ at hour $t$ and $\tau_i^{+}$ the first hour with $y_{it}=1$ ($\infty$ if none). In the challenge labeling $\tau_i^{+}$ precedes clinical onset by 6\,h, so it is an early-warning label time.
@@ -137,6 +156,51 @@ Uncertainty & patient-clustered bootstrap (1000 reps) \\
 \end{tabular}
 \end{adjustbox}
 \end{table}
+
+\begin{table}[!t]
+\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\caption{Cohort characteristics by hospital and hospital differences. Continuous values are median [IQR] of per-stay values (key predictors: per-stay median of the observed hourly values). SMD: standardised mean difference between hospitals, $|\bar x_A-\bar x_B|/\sqrt{(s_A^2+s_B^2)/2}$; values above 0.1 are conventionally read as imbalance. For missing data the SMD is that of the hourly missing indicator.}
+\label{tab:cohort}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lcccc}
+\toprule
+Characteristic & Hospital A & Hospital B & Overall & SMD \\
+\midrule
+Stays{,} $n$ & 20{,}336 & 20{,}000 & 40{,}336 & \\
+Septic stays{,} $n$ (\%) & 1{,}790 (8.8) & 1{,}142 (5.7) & 2{,}932 (7.3) & 0.12 \\
+Age, years & 64.7 [52.3, 75.7] & 62.0 [50.0, 72.0] & 63.1 [51.0, 74.0] & 0.12 \\
+Female sex, \% & 41.8 & 46.3 & 44.1 & 0.09 \\
+ICU stay length, h & 39 [25, 47] & 38 [23, 47] & 38 [24, 47] & 0.03 \\
+Positive rows, early prediction (\%) & 1.15 & 0.69 & 0.92 & \\
+Positive rows, hourly detection (\%) & 2.17 & 1.41 & 1.80 & \\
+\midrule
+\multicolumn{5}{l}{\emph{Key predictors, per-stay median of observed values}} \\
+HR (bpm) & 84 [74, 93] & 82 [71, 92] & 82 [72, 93] & 0.11 \\
+MAP (mm Hg) & 76.2 [70.0, 84.5] & 84.8 [76.5, 94.0] & 80.0 [73.0, 90.0] & 0.68 \\
+Temp ($^\circ$C) & 36.9 [36.6, 37.3] & 36.7 [36.5, 37.1] & 36.8 [36.5, 37.2] & 0.28 \\
+Resp (breaths/min) & 18.0 [16.0, 20.5] & 18.0 [16.0, 20.0] & 18.0 [16.0, 20.0] & 0.01 \\
+WBC ($10^3$/$\mu$L) & 10.8 [8.2, 13.9] & 9.4 [7.0, 12.3] & 10.1 [7.6, 13.2] & 0.22 \\
+Lactate (mg/dL) & 1.6 [1.2, 2.3] & 1.7 [1.2, 2.5] & 1.6 [1.2, 2.4] & 0.10 \\
+Creatinine (mg/dL) & 0.9 [0.7, 1.2] & 0.9 [0.7, 1.4] & 0.9 [0.7, 1.3] & 0.16 \\
+Platelets ($10^3$/$\mu$L) & 193 [144, 256] & 189 [139, 248] & 191 [141, 252] & 0.11 \\
+\midrule
+\multicolumn{5}{l}{\emph{Missing data, \% of hourly rows with no value}} \\
+HR & 7.7 & 12.1 & 9.9 & 0.15 \\
+MAP & 10.2 & 14.8 & 12.5 & 0.14 \\
+Temp & 66.2 & 66.1 & 66.2 & 0.00 \\
+Resp & 9.8 & 21.1 & 15.4 & 0.32 \\
+WBC & 92.5 & 94.7 & 93.6 & 0.09 \\
+Lactate & 96.6 & 98.1 & 97.3 & 0.10 \\
+Creatinine & 93.4 & 94.5 & 93.9 & 0.05 \\
+Platelets & 93.5 & 94.7 & 94.1 & 0.05 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+
+The hospitals differ beyond prevalence (Table~\ref{tab:cohort}). Patients in hospital B are slightly younger (median 62.0 vs 64.7 years) and more often female (46.3\% vs 41.8\%); ICU stay length is similar (median 38 vs 39\,h). The largest predictor difference is mean arterial pressure (per-stay median 84.8 vs 76.2\,mm\,Hg, SMD 0.68), followed by temperature (36.7 vs 36.9\,$^\circ$C, SMD 0.28) and white-cell count (SMD 0.22), and respiratory rate is missing in 21.1\% of hourly rows in hospital B against 9.8\% in A (SMD 0.32). These shifts, together with the prevalence difference, are plausible data-level contributors to the cross-hospital drop in performance reported in the Results.
+
 
 \subsection{Strictly causal features}
 \label{sec:method}
@@ -203,12 +267,35 @@ As an alternative sequence model we train a causal multi-task temporal CNN: six 
 \subsection{Splits and uncertainty}
 All reported scores are \emph{out-of-fold}, and folds are grouped by patient because correlated observations from one patient must not be split across folds \cite{roberts2017}: patients are split into five stratified, patient-disjoint folds, and each patient is scored by models that never saw them. Within each outer training set (80\% of patients), stage 1 uses a 4-fold inner patient split: each inner model fits on 75\% of the training patients, of which 12\% are held out for early stopping (validation log-loss), and scores the remaining 25\%, which gives out-of-fold logits for every training row; the stage-2 model fits on 85\% of the training patients and stops early on the other 15\%. Isotonic calibration is applied afterwards and is fitted on the out-of-fold scores of the other four folds. Hyper-parameters were chosen on validation patients only, and test folds were touched once. We report pooled AUROC and AUPRC with 95\% intervals from a patient-clustered bootstrap: whole stays are re-weighted, so hourly correlation does not shrink the intervals. AUROC is the probability that a random positive outranks a random negative \cite{hanley1982}, whereas AUPRC and ROC curves are related but not interchangeable under imbalance \cite{davis2006,saito2015}. Calibration is often neglected yet decisive for clinical use \cite{vancalster2019}, so we also report reliability and Brier skill. A \emph{balanced view} (432 septic and 432 non-septic patients, repeated 200 times) is computed from the same predictions only to allow comparison with balanced-test studies; headline metrics are never computed on resampled data.
 
+Table~\ref{tab:stages} gives the number of patients and events in each fitting, early-stopping and evaluation stage.
+
+\begin{table}[!t]
+\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\caption{Patients and events in each stage of the final two-stage pipeline, mean over the five outer folds (stage-1 rows: mean over the 20 inner models). Events are positive rows of the early-prediction (6\,h) and hourly-detection targets. The stage-1 held-out inner fold is scored to give the out-of-fold logits used by stage 2.}
+\label{tab:stages}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lcccc}
+\toprule
+Stage & Patients & Septic stays & Early-pred.\ events & Hourly-det.\ events \\
+\midrule
+Outer training set (80\%) & 32{,}269 & 2{,}346 & 11{,}263 & 22{,}333 \\
+Stage 1{,} fit (per inner model) & 21{,}297 & 1{,}548 & 7{,}451 & 14{,}742 \\
+Stage 1{,} early stopping & 2{,}905 & 211 & 996 & 2{,}008 \\
+Stage 1{,} held-out inner fold (scored) & 8{,}067 & 586 & 2{,}816 & 5{,}583 \\
+Stage 2{,} fit & 27{,}428 & 1{,}994 & 9{,}579 & 18{,}988 \\
+Stage 2{,} early stopping & 4{,}841 & 352 & 1{,}684 & 3{,}345 \\
+Outer test fold (evaluation) & 8{,}067 & 586 & 2{,}816 & 5{,}583 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
 \subsection{Subgroups, decision curves and alert burden}
-We report the performance of the final two-stage score within age bands ($<$45, 45--64, 65--79 and $\geq$80 years), sex (as coded in the challenge data) and hospital, using the pooled out-of-fold predictions. AUROC intervals use the patient-clustered bootstrap (300 replicates); AUPRC is a point estimate, reported with its lift over the subgroup's own prevalence. Race and ethnicity are not available in the challenge data. For decision-curve analysis \cite{vickers2006}, risks are calibrated by isotonic regression fitted on the out-of-fold scores of the other four folds and applied to the held-out fold, and the net benefit at threshold probability $p_t$ is computed over all evaluated rows,
+We report the performance of the final two-stage score within age bands ($<$45, 45--64, 65--79 and $\geq$80 years), sex (as coded in the challenge data) and hospital, using the pooled out-of-fold predictions. AUROC and AUPRC intervals use the patient-clustered bootstrap (300 replicates each), and AUPRC is also reported as lift over the subgroup's own prevalence. Race and ethnicity are not available in the challenge data. For decision-curve analysis \cite{vickers2006}, risks are calibrated by isotonic regression fitted on the out-of-fold scores of the other four folds and applied to the held-out fold, and the net benefit at threshold probability $p_t$ is computed over all evaluated rows,
 \begin{equation}
 \mathrm{NB}(p_t)=\frac{\mathrm{TP}}{N}-\frac{\mathrm{FP}}{N}\cdot\frac{p_t}{1-p_t},
 \end{equation}
-against the defaults of alerting on every row and on none. Alert burden is reported at fixed row-level specificities of 90\% and 95\%: false alarms per patient-day (alerts on rows with a negative target per 24 patient-hours), alerts per true positive, the share of septic stays alerted before the first positive label, and the median lead time with its interquartile range (IQR) over those stays. Thresholds are set on the pooled out-of-fold scores, so these figures are illustrative.
+against the defaults of alerting on every row and on none. Alert burden is reported at fixed row-level specificities of 90\% and 95\%: false alarms per patient-day (alerts on rows with a negative target per 24 patient-hours), alerts per true positive, the share of septic stays alerted before the first positive label, and the median lead time with its interquartile range (IQR) over those stays. Thresholds are set on the pooled out-of-fold scores, so these figures are illustrative operating points and not clinically validated deployment thresholds, which would have to be chosen and validated prospectively at the site of use.
 
 \subsection{Implementation and reproducibility}
 Experiments ran on a 10-core Apple-silicon laptop with 16\,GB of memory using Python 3.13, LightGBM 4.7, scikit-learn 1.8, pandas 2.3, NumPy 2.3 and PyTorch (MPS backend) for the TCN. Building the 370 features for all 1.55\,M rows takes under a minute; the two-stage cross-validation of one task takes roughly 30--60 minutes with five threads. Outer folds use seed 42 and inner splits use fixed seeds; fold assignments, hyper-parameters, saved predictions and the scripts that regenerate every table and figure are kept with the project, and the code listings omitted from this paper are in the supplementary material. The audit, the ablations and every number in this paper are produced by scripts that read the saved result files, so values in the text cannot drift from the data.
@@ -373,30 +460,30 @@ Detection & Within-hospital CV & 1.02 & 1.04 & 0.0010 & 6.6\% \\
 
 \begin{table}[!t]
 \centering\scriptsize\setlength{\tabcolsep}{3pt}
-\caption{Subgroup performance of the final model (pooled out-of-fold, natural prevalence). AUROC with 95\% patient-clustered bootstrap intervals (300 replicates); AUPRC is a point estimate and lift is AUPRC over the subgroup's own prevalence. Age bands in years; sex as coded in the challenge data.}
+\caption{Subgroup performance of the final model (pooled out-of-fold, natural prevalence). AUROC and AUPRC with 95\% patient-clustered bootstrap intervals (300 replicates each); lift is AUPRC over the subgroup's own prevalence. Age bands in years; sex as coded in the challenge data.}
 \label{tab:subgroups}
 \begin{adjustbox}{max width=\linewidth}
 \begin{tabular}{llcrcccc}
 \toprule
-Task & Group & Level & Patients & Prev.\ (\%) & AUROC [95\% CI] & AUPRC & Lift \\
+Task & Group & Level & Patients & Prev.\ (\%) & AUROC [95\% CI] & AUPRC [95\% CI] & Lift \\
 \midrule
-Early 6 h & Age (years) & $<$45 & 6{,}315 & 0.92 & 0.830 [0.811, 0.851] & 0.062 & 6.7 \\
- &  & 45--64 & 14{,}856 & 0.90 & 0.825 [0.812, 0.838] & 0.053 & 5.9 \\
- &  & 65--79 & 13{,}430 & 0.96 & 0.824 [0.812, 0.837] & 0.056 & 5.8 \\
- &  & $\geq$80 & 5{,}309 & 0.89 & 0.813 [0.789, 0.834] & 0.053 & 6.0 \\
- & Sex & Female & 17{,}595 & 0.85 & 0.823 [0.810, 0.836] & 0.055 & 6.5 \\
- &  & Male & 22{,}315 & 0.98 & 0.825 [0.814, 0.834] & 0.055 & 5.6 \\
- & Hospital & A & 20{,}133 & 1.15 & 0.822 [0.814, 0.832] & 0.063 & 5.5 \\
- &  & B & 19{,}777 & 0.69 & 0.813 [0.799, 0.828] & 0.041 & 5.9 \\
+Early 6 h & Age (years) & $<$45 & 6{,}315 & 0.92 & 0.830 [0.811, 0.851] & 0.062 [0.051, 0.081] & 6.7 \\
+ &  & 45--64 & 14{,}856 & 0.90 & 0.825 [0.812, 0.838] & 0.053 [0.047, 0.060] & 5.9 \\
+ &  & 65--79 & 13{,}430 & 0.96 & 0.824 [0.812, 0.837] & 0.056 [0.050, 0.063] & 5.8 \\
+ &  & $\geq$80 & 5{,}309 & 0.89 & 0.813 [0.789, 0.834] & 0.053 [0.044, 0.063] & 6.0 \\
+ & Sex & Female & 17{,}595 & 0.85 & 0.823 [0.810, 0.836] & 0.055 [0.050, 0.062] & 6.5 \\
+ &  & Male & 22{,}315 & 0.98 & 0.825 [0.814, 0.834] & 0.055 [0.051, 0.061] & 5.6 \\
+ & Hospital & A & 20{,}133 & 1.15 & 0.822 [0.814, 0.832] & 0.063 [0.058, 0.069] & 5.5 \\
+ &  & B & 19{,}777 & 0.69 & 0.813 [0.799, 0.828] & 0.041 [0.036, 0.047] & 5.9 \\
 \midrule
-Detection & Age (years) & $<$45 & 6{,}388 & 1.84 & 0.857 [0.842, 0.871] & 0.143 & 7.8 \\
- &  & 45--64 & 15{,}024 & 1.78 & 0.852 [0.844, 0.862] & 0.138 & 7.8 \\
- &  & 65--79 & 13{,}557 & 1.83 & 0.851 [0.841, 0.860] & 0.133 & 7.3 \\
- &  & $\geq$80 & 5{,}367 & 1.74 & 0.846 [0.830, 0.863] & 0.122 & 7.0 \\
- & Sex & Female & 17{,}770 & 1.66 & 0.855 [0.846, 0.864] & 0.133 & 8.0 \\
- &  & Male & 22{,}566 & 1.91 & 0.849 [0.842, 0.858] & 0.135 & 7.1 \\
- & Hospital & A & 20{,}336 & 2.17 & 0.832 [0.824, 0.840] & 0.127 & 5.8 \\
- &  & B & 20{,}000 & 1.41 & 0.869 [0.860, 0.877] & 0.145 & 10.3 \\
+Detection & Age (years) & $<$45 & 6{,}388 & 1.84 & 0.857 [0.842, 0.871] & 0.143 [0.124, 0.165] & 7.8 \\
+ &  & 45--64 & 15{,}024 & 1.78 & 0.852 [0.844, 0.862] & 0.138 [0.124, 0.155] & 7.8 \\
+ &  & 65--79 & 13{,}557 & 1.83 & 0.851 [0.841, 0.860] & 0.133 [0.120, 0.147] & 7.3 \\
+ &  & $\geq$80 & 5{,}367 & 1.74 & 0.846 [0.830, 0.863] & 0.122 [0.110, 0.140] & 7.0 \\
+ & Sex & Female & 17{,}770 & 1.66 & 0.855 [0.846, 0.864] & 0.133 [0.119, 0.146] & 8.0 \\
+ &  & Male & 22{,}566 & 1.91 & 0.849 [0.842, 0.858] & 0.135 [0.125, 0.149] & 7.1 \\
+ & Hospital & A & 20{,}336 & 2.17 & 0.832 [0.824, 0.840] & 0.127 [0.118, 0.137] & 5.8 \\
+ &  & B & 20{,}000 & 1.41 & 0.869 [0.860, 0.877] & 0.145 [0.131, 0.160] & 10.3 \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
@@ -532,10 +619,10 @@ Causal enc.+aux & 0.771 & 0.038 & 0.737 & 0.457 & 24.9 & 0.059 & 0.126 & 0.025 &
 
 \textbf{Clinical use.} With 1--2\% hourly prevalence, even good models generate many alerts per true positive (21.5 for early prediction and 10.7 for detection at 90\% specificity; Table~\ref{tab:operating}); thresholds, alarm burden and workflow integration would need prospective evaluation, and although the decision curves show net benefit over the default strategies at low thresholds (Fig.~\ref{fig:dca}), they assume no particular cost of a false alarm. In deployment, unavailable or stale measurements would be handled as in training (forward-fill with staleness features, remaining gaps left missing), and because charting frequency itself shifts the score, gaps and changes in charting practice should be monitored. The model is not designed for interactive input: features would be computed automatically from the hourly record, and users would only need to act on alerts, with no special modelling expertise.
 
-\textbf{Ethics.} The data are public, de-identified PhysioNet records used under their terms. The models are research prototypes, not clinical decision tools, and subgroup performance by age, sex and hospital is reported in Table~\ref{tab:subgroups}; race and ethnicity are not in the data, so fairness across them could not be assessed. Algorithmic bias is a documented risk for health-care prediction \cite{obermeyer2019}, and responsible deployment needs subgroup analysis, monitoring and governance \cite{wiens2019}. Known health inequalities between sociodemographic groups cannot be characterised here, because the data carry no race, ethnicity or socioeconomic information, and performance may differ in groups that are under-represented in the two hospitals. The intended users of such a system would be ICU clinicians receiving decision-support alerts; this study does not evaluate that use. The study was not registered, no protocol was prepared beyond the process log in the appendix, and no patients or members of the public were involved.
+\textbf{Ethics.} The data are public, de-identified PhysioNet/CinC 2019 records released under a Creative Commons Attribution 4.0 licence \cite{reyna2020,goldberger2000}. This study is a secondary analysis of those data: no new data were collected, no patients were contacted, and no additional ethics committee approval or consent was obtained. The models are research prototypes, not clinical decision tools, and subgroup performance by age, sex and hospital is reported in Table~\ref{tab:subgroups}; race and ethnicity are not in the data, so fairness across them could not be assessed. Algorithmic bias is a documented risk for health-care prediction \cite{obermeyer2019}, and responsible deployment needs subgroup analysis, monitoring and governance \cite{wiens2019}. Health inequalities in sepsis are documented: incidence and mortality vary by region, age and sex \cite{rudd2020}, and sex- and gender-dependent differences in clinical sepsis \cite{zhang2021} and gender disparities in outcomes after sepsis \cite{wilcox2020} have been described. The challenge data carry no race, ethnicity or socioeconomic information, so inequalities along those axes cannot be characterised here, and performance may differ in groups that are under-represented in the two hospitals; age and sex are the only sociodemographic variables we could examine. We applied no fairness-mitigation method: the aim is an evaluation protocol, AUROC differed by less than 0.02 across age bands and sexes (hospital differences are larger and are discussed with the cross-hospital results), and mitigation needs a chosen fairness criterion and protected attributes that the data do not provide. The intended users of such a system would be ICU clinicians receiving decision-support alerts; this study does not evaluate that use. The study was not registered, no protocol was prepared beyond the process log in the appendix, and no patients or members of the public were involved.
 
 \section{Limitations}
-(1) Both hospitals belong to one public challenge dataset; external validation on MIMIC-III or MIMIC-IV \cite{johnson2016,johnson2023} or eICU \cite{pollard2018} is needed. (2) Labels are the challenge's SepsisLabel, whose onset time is not verified clinically (a label-timing sensitivity check is in Sec.~\ref{sec:horizon}), and antibiotic and culture timestamps are unavailable. (3) The stay-level task is retrospective. (4) The descriptive reporting checklist in Appendix~\ref{app:checklist} is our judgement from the text we read and may omit practices that other authors followed but did not report. (5) The ablation and importance results use the single-stage boosted model on an earlier feature set. (6) Thresholds in the lead-time analysis are set on the pooled out-of-fold scores. (7) Subgroups are limited to age, sex and hospital, race and ethnicity are not available, and subgroup AUPRC has no interval; decision curves are at row level. (8) Our first training run used an early-stopping call that stopped on any metric; we discarded those runs and repeated everything with the corrected first-metric rule.
+(1) Both hospitals belong to one public challenge dataset; external validation on MIMIC-III or MIMIC-IV \cite{johnson2016,johnson2023} or eICU \cite{pollard2018} is needed. (2) Labels are the challenge's SepsisLabel, whose onset time is not verified clinically (a label-timing sensitivity check is in Sec.~\ref{sec:horizon}), and antibiotic and culture timestamps are unavailable. (3) The stay-level task is retrospective. (4) The descriptive reporting checklist in Appendix~\ref{app:checklist} is our judgement from the text we read and may omit practices that other authors followed but did not report. (5) The ablation and importance results use the single-stage boosted model on an earlier feature set. (6) Thresholds in the lead-time analysis are set on the pooled out-of-fold scores. (7) Subgroups are limited to age, sex (as a binary code) and hospital, race and ethnicity are not available, small subgroups have wide intervals, and no fairness-mitigation method was tested; decision curves are at row level. (8) Our first training run used an early-stopping call that stopped on any metric; we discarded those runs and repeated everything with the corrected first-metric rule.
 
 \section{Conclusion}
 \herald{} combines a strictly causal, audited feature pipeline with two-stage boosting for 6\,h early prediction (AUROC \AurocFc, AUPRC \AuprcFc) and hourly detection (\AurocDt, \AuprcDt), plus a retrospective stay-level classifier (\AurocStay, \AuprcStay). Under patient-level cross-validation, natural prevalence and bootstrap intervals, performance is stable across folds but falls by 3--6 AUROC points across hospitals, and a large part of the signal is measurement timing. On identical test patients, a TOPSIS comparison shows \herald{} ahead of earlier baseline models by a small margin; we do not rank it against published scores, whose protocols differ. We hope the audit, the cross-hospital test and the disclosed negative results are useful reference points for future sepsis-prediction studies.
@@ -634,7 +721,7 @@ For transparency we list the main steps and decisions in the order they happened
 \end{enumerate}
 
 \FloatBarrier
-\begin{thebibliography}{36}
+\begin{thebibliography}{38}
 \bibitem{rudd2020} K.~E. Rudd \textit{et al.}, ``Global, regional, and national sepsis incidence and mortality, 1990--2017: Analysis for the Global Burden of Disease Study,'' \textit{Lancet}, vol.~395, no.~10219, pp.~200--211, 2020, doi: 10.1016/S0140-6736(19)32989-7.
 \bibitem{singer2016} M.~Singer \textit{et al.}, ``The Third International Consensus Definitions for Sepsis and Septic Shock (Sepsis-3),'' \textit{JAMA}, vol.~315, no.~8, pp.~801--810, 2016, doi: 10.1001/jama.2016.0287.
 \bibitem{reyna2020} M.~A. Reyna \textit{et al.}, ``Early prediction of sepsis from clinical data: The PhysioNet/Computing in Cardiology Challenge 2019,'' \textit{Crit. Care Med.}, vol.~48, no.~2, pp.~210--217, 2020, doi: 10.1097/CCM.0000000000004145.
@@ -669,6 +756,8 @@ For transparency we list the main steps and decisions in the order they happened
 \bibitem{behzadian2012} M.~Behzadian \textit{et al.}, ``A state-of the-art survey of TOPSIS applications,'' \textit{Expert Syst. Appl.}, vol.~39, no.~17, pp.~13051--13069, 2012, doi: 10.1016/j.eswa.2012.05.056.
 \bibitem{wang2025} Z.~Wang \textit{et al.}, ``A methodological systematic review of validation and performance of sepsis real-time prediction models,'' \textit{npj Digit. Med.}, vol.~8, no.~1, art.~190, 2025, doi: 10.1038/s41746-025-01587-1.
 \bibitem{cakiroglu2026} \"{O}.~F. \c{C}ak\i{}ro\u{g}lu, ``Beyond the AUROC: Data leakage, random splitting, and neglected calibration in critical care machine learning,'' \textit{Eurasian J. Crit. Care}, vol.~8, no.~2, pp.~113--114, 2026, doi: 10.55994/ejcc.1993408.
+\bibitem{zhang2021} M.~Q. Zhang \textit{et al.}, ``Sex- and gender-dependent differences in clinical and preclinical sepsis,'' \textit{Shock}, vol.~56, no.~2, pp.~178--187, 2021, doi: 10.1097/SHK.0000000000001717.
+\bibitem{wilcox2020} M.~E. Wilcox, J.~P. Donnelly, and N.~I. Lone, ``Understanding gender disparities in outcomes after sepsis,'' \textit{Intensive Care Med.}, vol.~46, no.~4, pp.~796--798, 2020, doi: 10.1007/s00134-020-05961-3.
 \bibitem{chen2016} T.~Chen and C.~Guestrin, ``XGBoost: A scalable tree boosting system,'' \textit{Proc. 22nd ACM SIGKDD Int. Conf. Knowledge Discovery and Data Mining (KDD)}, pp.~785--794, 2016, doi: 10.1145/2939672.2939785.
 \end{thebibliography}
 

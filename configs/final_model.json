@@ -1,0 +1,89 @@
+{
+ "description": "Seeds and model configuration of the reported cross-validated results (scripts/07_final.py) and of the release models (scripts/19_train_release_models.py).",
+ "data": {
+  "patients": 40336,
+  "features": 370,
+  "feature_file": "cache/columns2.json",
+  "fold_assignments": "results/patient_folds.csv"
+ },
+ "outer_cv": {
+  "folds": 5,
+  "patient_level": true,
+  "stratified_by": "ever septic",
+  "seed": 42
+ },
+ "cross_hospital": [
+  "train A -> test B",
+  "train B -> test A"
+ ],
+ "lightgbm_common": {
+  "objective": "binary",
+  "metric": [
+   "binary_logloss",
+   "auc"
+  ],
+  "bagging_fraction": 0.8,
+  "bagging_freq": 1,
+  "max_bin": 127,
+  "seed": 0,
+  "early_stopping_rounds": 100,
+  "first_metric_only": true,
+  "max_rounds": 3000,
+  "num_threads": 5
+ },
+ "stage1": {
+  "inner_folds": 4,
+  "inner_kfold_seed": 1,
+  "early_stopping_holdout_fraction": 0.12,
+  "early_stopping_split_seeds": "j = 0..3 (inner model index)",
+  "params": {
+   "forecast": {
+    "learning_rate": 0.05,
+    "num_leaves": 31,
+    "min_child_samples": 500,
+    "feature_fraction": 0.3,
+    "lambda_l2": 10
+   },
+   "detect": {
+    "learning_rate": 0.05,
+    "num_leaves": 31,
+    "min_child_samples": 2000,
+    "feature_fraction": 0.2,
+    "lambda_l2": 30,
+    "extra_trees": true
+   }
+  },
+  "test_logit": "mean of the four inner models"
+ },
+ "stage2": {
+  "fit_fraction": 0.85,
+  "early_stopping_fraction": 0.15,
+  "split_seed": 7,
+  "params": {
+   "learning_rate": 0.05,
+   "num_leaves": 15,
+   "min_child_samples": 500,
+   "feature_fraction": 0.5,
+   "lambda_l2": 10
+  },
+  "inputs": "causal history of the stage-1 score (z, running max, trailing means 3/6/12/24 h, maxima 6/24 h, dz3, dz6, counts above the 90th and 99th training-score percentiles) + ICULOS + 25 most important stage-1 features"
+ },
+ "calibration": "cross-fold isotonic regression: fitted on the out-of-fold scores of the other four folds",
+ "bootstrap": {
+  "type": "patient-clustered",
+  "replicates_main": 1000,
+  "replicates_subgroups": 300,
+  "seed_auroc": 42,
+  "seed_auprc_subgroups": 43
+ },
+ "software": {
+  "python": "3.13.5",
+  "numpy": "2.3.1",
+  "pandas": "2.3.1",
+  "scipy": "1.17.1",
+  "scikit-learn": "1.8.0",
+  "lightgbm": "4.7.0",
+  "torch": "2.11.0 (TCN only)",
+  "hardware": "10-core Apple-silicon laptop, 16 GB"
+ }
+}

@@ -19,10 +19,10 @@ for task in ["Early 6 h", "Detection"]:
     rows.append("\\midrule" if rows else "")
     for s in [x for x in J["subgroups"] if x["task"] == task]:
         g = s["group"] if s["group"] != last else ""; last = s["group"]
-        rows.append(f"{task if g and s['group']=='Age (years)' else ''} & {g} & {LV.get(s['level'], s['level'])} & {s['n_patients']:,} & {100*s['prevalence']:.2f} & {s['auroc']:.3f} [{s['auroc_lo']:.3f}, {s['auroc_hi']:.3f}] & {s['auprc']:.3f} & {s['lift']:.1f} \\\\".replace(f"{s['n_patients']:,}", f"{s['n_patients']:,}".replace(",", "{,}")))
+        rows.append(f"{task if g and s['group']=='Age (years)' else ''} & {g} & {LV.get(s['level'], s['level'])} & {s['n_patients']:,} & {100*s['prevalence']:.2f} & {s['auroc']:.3f} [{s['auroc_lo']:.3f}, {s['auroc_hi']:.3f}] & {s['auprc']:.3f} [{s['auprc_lo']:.3f}, {s['auprc_hi']:.3f}] & {s['lift']:.1f} \\\\".replace(f"{s['n_patients']:,}", f"{s['n_patients']:,}".replace(",", "{,}")))
     last = None
-t = ("\\begin{table}[!t]\n\\centering\\scriptsize\\setlength{\\tabcolsep}{3pt}\n\\caption{Subgroup performance of the final model (pooled out-of-fold, natural prevalence). AUROC with 95\\% patient-clustered bootstrap intervals (300 replicates); AUPRC is a point estimate and lift is AUPRC over the subgroup's own prevalence. Age bands in years; sex as coded in the challenge data.}\n"
-     "\\label{tab:subgroups}\n\\begin{adjustbox}{max width=\\linewidth}\n\\begin{tabular}{llcrcccc}\n\\toprule\nTask & Group & Level & Patients & Prev.\\ (\\%) & AUROC [95\\% CI] & AUPRC & Lift \\\\\n\\midrule\n"
+t = ("\\begin{table}[!t]\n\\centering\\scriptsize\\setlength{\\tabcolsep}{3pt}\n\\caption{Subgroup performance of the final model (pooled out-of-fold, natural prevalence). AUROC and AUPRC with 95\\% patient-clustered bootstrap intervals (300 replicates each); lift is AUPRC over the subgroup's own prevalence. Age bands in years; sex as coded in the challenge data.}\n"
+     "\\label{tab:subgroups}\n\\begin{adjustbox}{max width=\\linewidth}\n\\begin{tabular}{llcrcccc}\n\\toprule\nTask & Group & Level & Patients & Prev.\\ (\\%) & AUROC [95\\% CI] & AUPRC [95\\% CI] & Lift \\\\\n\\midrule\n"
      + "\n".join(r for r in rows if r) + "\n\\bottomrule\n\\end{tabular}\n\\end{adjustbox}\n\\end{table}\n")
 open(f"{TAB}/t_subgroups.tex", "w").write(t)
 # alert burden table

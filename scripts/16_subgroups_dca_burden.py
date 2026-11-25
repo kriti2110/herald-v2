@@ -1,11 +1,12 @@
 """Subgroup analysis (age band, sex, hospital), decision-curve analysis and alert-burden metrics.
 Reads only saved out-of-fold predictions (final two-stage score z2). Nothing is retrained."""
-import json, os, numpy as np, pandas as pd
+import json, numpy as np, pandas as pd
 from sklearn.isotonic import IsotonicRegression
 from sklearn.metrics import average_precision_score as AP, roc_auc_score as AUC
-R = os.environ.get("HERALD_ROOT", os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+R = "/Users/kritiraj/Desktop/HERALD-v2"
 rng = np.random.default_rng(42)
-pat = pd.read_csv(f"{R}/results/patient_attributes.csv", index_col="patient_id")   # per-patient Age, Gender (from the challenge data)
+raw = pd.read_parquet(f"{R}/cache/raw_long.parquet", columns=["patient_id", "Age", "Gender"])
+pat = raw.groupby("patient_id").agg(Age=("Age", "first"), Gender=("Gender", "first"))
 hosp = pd.read_csv(f"{R}/results/patient_folds.csv").set_index("patient_id")["hospital"]
 pat["hospital"] = hosp
 pat["ageband"] = pd.cut(pat.Age, [0, 45, 65, 80, 200], right=False, labels=["<45", "45-64", "65-79", ">=80"])
@@ -20,6 +21,16 @@ def boot_auc(y, p, pid, reps=300):
         den = wp.sum() * wn.sum()
         if den > 0: au.append((wp * cn).sum() / den)
     return np.percentile(au, [2.5, 97.5])
+
+def boot_ap(y, p, pid, reps=300):
+    """Patient-clustered bootstrap of average precision (separate RNG so AUROC intervals are unchanged)."""
+    rg = np.random.default_rng(43); codes, uniq = pd.factorize(pid); n = len(uniq)
+    o = np.argsort(-p, kind="stable"); y = y[o].astype(float); codes = codes[o]; vals = []
+    for _ in range(reps):
+        w = np.bincount(rg.integers(0, n, n), minlength=n)[codes].astype(float); wp = w * y; tp = np.cumsum(wp); fp = np.cumsum(w * (1 - y))
+        den = wp.sum()
+        if den > 0: vals.append((wp * tp / np.maximum(tp + fp, 1e-12)).sum() / den)
+    return np.percentile(vals, [2.5, 97.5])
 
 def calibrate(d):   # cross-fold isotonic: fit on the other folds' OOF scores, apply to held-out fold
     p = np.zeros(len(d))
@@ -36,9 +47,10 @@ for task, f in [("Early 6 h", "final_cv_forecast_preds"), ("Detection", "final_c
         for lv in [x for x in d[col].cat.categories] if str(d[col].dtype) == "category" else sorted(d[col].dropna().unique()):
             s = d[d[col] == lv]; y = s.y.to_numpy(); p = s.z2.to_numpy()
             ci = boot_auc(y, p, s.patient_id.to_numpy())
+            cap = boot_ap(y, p, s.patient_id.to_numpy())
             out["subgroups"].append(dict(task=task, group=gname, level=str(lv), n_patients=int(s.patient_id.nunique()), n_rows=int(len(s)),
                 prevalence=float(y.mean()), auroc=float(AUC(y, p)), auroc_lo=float(ci[0]), auroc_hi=float(ci[1]),
-                auprc=float(AP(y, p)), lift=float(AP(y, p) / y.mean())))
+                auprc=float(AP(y, p)), auprc_lo=float(cap[0]), auprc_hi=float(cap[1]), lift=float(AP(y, p) / y.mean())))
     # decision curve (row level, cross-fold isotonic-calibrated risk)
     d["p"] = calibrate(d); y = d.y.to_numpy(); p = d.p.to_numpy(); N = len(d); prev = y.mean()
     th = np.round(np.arange(0.005, 0.1501, 0.005), 3); nb, nball = [], []
